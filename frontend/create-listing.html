@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List an Item — CampusShare</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .form-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      max-width: 760px;
+      margin: 2rem auto;
+      box-shadow: var(--shadow-sm);
+    }
+    .form-header {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.25rem;
+    }
+    .form-header h2 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .image-preview-strip {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .preview-thumb {
+      width: 100px;
+      height: 75px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="navbar-placeholder"></div>
+
+  <div class="container main-content">
+    <div class="form-card">
+      <div class="form-header">
+        <h2 id="page-heading">+ List a Resource on Campus</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Help fellow students study and experiment while earning or sharing safely.</p>
+      </div>
+
+      <form id="listing-form">
+        <!-- Title -->
+        <div class="form-group">
+          <label class="form-label" for="title">Item Name / Title <span class="required">*</span></label>
+          <input type="text" id="title" class="form-control" placeholder="e.g. TI-84 Plus CE Graphing Calculator or Stewart Calculus 8th Ed" required minlength="3">
+        </div>
+
+        <!-- Category & Condition -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="category">Category <span class="required">*</span></label>
+            <select id="category" class="form-select" required>
+              <option value="">Select Category</option>
+              <option value="Textbooks">Textbooks</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Lab Equipment">Lab Equipment</option>
+              <option value="Tools">Tools & Repair Kits</option>
+              <option value="Lab Coats">Lab Coats & Safety Gear</option>
+              <option value="Calculators">Calculators</option>
+              <option value="Other">Other Items</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="condition">Condition <span class="required">*</span></label>
+            <select id="condition" class="form-select" required>
+              <option value="">Select Condition</option>
+              <option value="New">New (Unopened / Never Used)</option>
+              <option value="Like New">Like New (Mint Condition)</option>
+              <option value="Good">Good (Minor Signs of Use)</option>
+              <option value="Used">Used (Functional with cosmetic wear)</option>
+              <option value="Heavily Used">Heavily Used</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Rental Type: Paid vs Free Borrow -->
+        <div class="form-group">
+          <label class="form-label">Rental Type <span class="required">*</span></label>
+          <div style="display: flex; gap: 1.5rem; margin-top: 0.4rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 600;">
+              <input type="radio" name="rental_type" value="paid" checked onchange="toggleRentalPricing()">
+              <span>Paid Rental</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 600;">
+              <input type="radio" name="rental_type" value="free" onchange="toggleRentalPricing()">
+              <span>Free Borrow (₹0 / zero charge)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Pricing Fields -->
+        <div class="form-row" id="pricing-fields-row">
+          <div class="form-group">
+            <label class="form-label" for="price_per_day">Daily Rental Price (₹) <span class="required">*</span></label>
+            <input type="number" id="price_per_day" class="form-control" placeholder="e.g. 35" min="0" step="1" value="35">
+            <div class="form-hint">Standard daily rate charged to borrower.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="price_per_week">Weekly Discount Rate (₹)</label>
+            <input type="number" id="price_per_week" class="form-control" placeholder="e.g. 180" min="0" step="1" value="180">
+            <div class="form-hint">Applied automatically for rentals >= 7 days.</div>
+          </div>
+        </div>
+
+        <!-- Security Deposit & Max Duration -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="security_deposit">Refundable Security Deposit (₹)</label>
+            <input type="number" id="security_deposit" class="form-control" placeholder="e.g. 300" min="0" step="1" value="250">
+            <div class="form-hint">Held safely until undamaged return is finalized.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="max_duration_days">Max Rental Duration (Days) <span class="required">*</span></label>
+            <input type="number" id="max_duration_days" class="form-control" min="1" max="180" value="30" required>
+            <div class="form-hint">Maximum number of days a student can borrow this.</div>
+          </div>
+        </div>
+
+        <!-- Campus Location -->
+        <div class="form-group">
+          <label class="form-label" for="pickup_location">Campus Pickup Location <span class="required">*</span></label>
+          <select id="pickup_location" class="form-select" required>
+            <option value="">Select Pickup Location</option>
+            <option value="Main Library">Main Library</option>
+            <option value="Engineering Block">Engineering Block</option>
+            <option value="Science Block">Science Block</option>
+            <option value="Hostel Block A">Hostel Block A</option>
+            <option value="Hostel Block B">Hostel Block B</option>
+            <option value="Student Center">Student Center</option>
+            <option value="Cafeteria">Cafeteria</option>
+          </select>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label class="form-label" for="description">Detailed Description <span class="required">*</span></label>
+          <textarea id="description" class="form-textarea" placeholder="Include edition, accessories included (cables, manuals, cases), course codes it is useful for, and preferred meet times..." required minlength="10"></textarea>
+        </div>
+
+        <!-- Photos / Image Upload -->
+        <div class="form-group">
+          <label class="form-label">Item Photo(s)</label>
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <input type="file" id="image-file-input" class="form-control" accept="image/*" style="max-width: 320px;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="uploadImageFile()">Upload Photo</button>
+          </div>
+          <div class="form-hint">Or choose from sample presets below, or enter an image URL:</div>
+          <input type="text" id="image-url-input" class="form-control" style="margin-top: 0.5rem;" placeholder="https://... or /uploads/...">
+
+          <div class="image-preview-strip" id="preview-strip">
+            <!-- Thumbnail previews -->
+          </div>
+        </div>
+
+        <!-- Semester Resource Checkbox -->
+        <div class="form-group" style="margin-top: 1.5rem;">
+          <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer; font-size: 0.9rem; font-weight: 600;">
+            <input type="checkbox" id="is_semester_resource">
+            <span>Mark as high-demand "Semester Resource" (Highlight on Homepage)</span>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+          <button type="submit" id="save-btn" class="btn btn-primary btn-lg" style="flex: 1;">
+            Publish Listing
+          </button>
+          <a href="/dashboard.html" class="btn btn-secondary btn-lg">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    let uploadedImages = [];
+    let editListingId = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!API.isAuthenticated()) {
+        showToast("Please log in to list resources.", "info");
+        window.location.href = "/login.html";
+        return;
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      editListingId = params.get("edit");
+
+      if (editListingId) {
+        document.getElementById("page-heading").textContent = "Edit Campus Listing";
+        document.getElementById("save-btn").textContent = "Update Listing";
+        await prefillListingData(editListingId);
+      }
+    });
+
+    function toggleRentalPricing() {
+      const isFree = document.querySelector('input[name="rental_type"]:checked').value === "free";
+      const pRow = document.getElementById("pricing-fields-row");
+      if (isFree) {
+        pRow.style.opacity = "0.4";
+        pRow.style.pointerEvents = "none";
+        document.getElementById("price_per_day").value = 0;
+        document.getElementById("price_per_week").value = 0;
+      } else {
+        pRow.style.opacity = "1";
+        pRow.style.pointerEvents = "auto";
+        if (document.getElementById("price_per_day").value == 0) {
+          document.getElementById("price_per_day").value = 35;
+          document.getElementById("price_per_week").value = 180;
+        }
+      }
+    }
+
+    async function uploadImageFile() {
+      const fileInput = document.getElementById("image-file-input");
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showToast("Please choose an image file first.", "error");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+
+      try {
+        const res = await API.request("/api/listings/upload-image", {
+          method: "POST",
+          body: formData
+        });
+
+        uploadedImages.push(res.image_url);
+        renderImagePreviews();
+        showToast("Image uploaded successfully!", "success");
+        fileInput.value = "";
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    function renderImagePreviews() {
+      const strip = document.getElementById("preview-strip");
+      strip.innerHTML = uploadedImages.map((url, idx) => `
+        <div style="position: relative; display: inline-block;">
+          <img src="${url}" class="preview-thumb">
+          <button type="button" style="position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.7); color: #fff; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; cursor: pointer;" onclick="removeImage(${idx})">&times;</button>
+        </div>
+      `).join("");
+    }
+
+    function removeImage(idx) {
+      uploadedImages.splice(idx, 1);
+      renderImagePreviews();
+    }
+
+    async function prefillListingData(id) {
+      try {
+        const l = await API.request(`/api/listings/${id}`);
+        document.getElementById("title").value = l.title;
+        document.getElementById("category").value = l.category;
+        document.getElementById("condition").value = l.condition;
+        document.getElementById("pickup_location").value = l.pickup_location;
+        document.getElementById("description").value = l.description;
+        document.getElementById("price_per_day").value = l.price_per_day;
+        document.getElementById("price_per_week").value = l.price_per_week;
+        document.getElementById("security_deposit").value = l.security_deposit;
+        document.getElementById("max_duration_days").value = l.max_duration_days;
+        document.getElementById("is_semester_resource").checked = l.is_semester_resource;
+
+        const radio = document.querySelector(`input[name="rental_type"][value="${l.rental_type}"]`);
+        if (radio) radio.checked = true;
+        toggleRentalPricing();
+
+        if (l.images && l.images.length > 0) {
+          uploadedImages = l.images.map(img => img.image_url);
+          renderImagePreviews();
+        }
+      } catch (err) {
+        showToast("Failed to load listing for editing.", "error");
+      }
+    }
+
+    document.getElementById("listing-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // Check if user entered manual URL
+      const manualUrl = document.getElementById("image-url-input").value.trim();
+      if (manualUrl && !uploadedImages.includes(manualUrl)) {
+        uploadedImages.push(manualUrl);
+      }
+
+      // Default sample image if none provided
+      if (uploadedImages.length === 0) {
+        const cat = document.getElementById("category").value.toLowerCase().replace(' ', '_');
+        uploadedImages.push(`/uploads/item_1_textbooks.svg`);
+      }
+
+      const rental_type = document.querySelector('input[name="rental_type"]:checked').value;
+      const payload = {
+        title: document.getElementById("title").value.trim(),
+        category: document.getElementById("category").value,
+        condition: document.getElementById("condition").value,
+        rental_type: rental_type,
+        price_per_day: rental_type === 'free' ? 0 : parseFloat(document.getElementById("price_per_day").value || 0),
+        price_per_week: rental_type === 'free' ? 0 : parseFloat(document.getElementById("price_per_week").value || 0),
+        security_deposit: parseFloat(document.getElementById("security_deposit").value || 0),
+        max_duration_days: parseInt(document.getElementById("max_duration_days").value || 30),
+        pickup_location: document.getElementById("pickup_location").value,
+        description: document.getElementById("description").value.trim(),
+        is_semester_resource: document.getElementById("is_semester_resource").checked,
+        images: uploadedImages
+      };
+
+      const btn = document.getElementById("save-btn");
+      btn.disabled = true;
+      btn.textContent = editListingId ? "Saving..." : "Publishing...";
+
+      try {
+        if (editListingId) {
+          await API.request(`/api/listings/${editListingId}`, {
+            method: "PUT",
+            body: JSON.stringify(payload)
+          });
+          showToast("Listing updated successfully!", "success");
+          setTimeout(() => window.location.href = `/listing.html?id=${editListingId}`, 600);
+        } else {
+          const res = await API.request("/api/listings", {
+            method: "POST",
+            body: JSON.stringify(payload)
+          });
+          showToast("Listing published to campus marketplace!", "success");
+          setTimeout(() => window.location.href = `/listing.html?id=${res.id}`, 600);
+        }
+      } catch (err) {
+        showToast(err.message, "error");
+        btn.disabled = false;
+        btn.textContent = editListingId ? "Update Listing" : "Publish Listing";
+      }
+    });
+  </script>
+</body>
+</html>

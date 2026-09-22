@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard & Moderation — CampusShare</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .admin-layout {
+      margin-top: 2rem;
+    }
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .admin-kpi {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .admin-kpi .num {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--text-main);
+    }
+    .admin-kpi .lbl {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .table-container {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+    }
+    table.admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      text-align: left;
+    }
+    table.admin-table th {
+      padding: 0.75rem 1rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.775rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    table.admin-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    table.admin-table tr:hover {
+      background: var(--bg-main);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="navbar-placeholder"></div>
+
+  <div class="container main-content admin-layout">
+
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <span class="badge badge-danger" style="margin-bottom: 0.4rem;">Staff Access</span>
+        <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-main);">CampusShare Administration</h1>
+        <p style="color: var(--text-muted); font-size: 1rem;">Platform analytics, student trust moderation, dispute resolution, and listing curation.</p>
+      </div>
+      <div>
+        <button class="btn btn-secondary btn-sm" onclick="loadAdminData()">🔄 Refresh Platform Metrics</button>
+      </div>
+    </div>
+
+    <!-- KPI Metric Cards -->
+    <div class="kpi-row" id="kpi-row">
+      <div class="admin-kpi">
+        <div class="lbl">Total Students</div>
+        <div class="num" id="stat-students">0</div>
+      </div>
+      <div class="admin-kpi">
+        <div class="lbl">Platform Listings</div>
+        <div class="num" id="stat-listings">0</div>
+      </div>
+      <div class="admin-kpi">
+        <div class="lbl">Active Rentals</div>
+        <div class="num" id="stat-active" style="color: var(--primary);">0</div>
+      </div>
+      <div class="admin-kpi">
+        <div class="lbl">Overdue Rentals</div>
+        <div class="num" id="stat-overdue" style="color: var(--danger);">0</div>
+      </div>
+      <div class="admin-kpi">
+        <div class="lbl">Completed Rentals</div>
+        <div class="num" id="stat-completed" style="color: var(--success);">0</div>
+      </div>
+      <div class="admin-kpi">
+        <div class="lbl">Open Reports</div>
+        <div class="num" id="stat-reports" style="color: var(--warning);">0</div>
+      </div>
+      <div class="admin-kpi">
+        <div class="lbl">Total Value Shared</div>
+        <div class="num" id="stat-value" style="font-size: 1.6rem;">₹0</div>
+      </div>
+    </div>
+
+    <!-- Admin Tabs -->
+    <div class="tab-nav">
+      <button class="tab-btn active" id="atab-users-btn" onclick="switchAdminTab('users')">👥 Students Management</button>
+      <button class="tab-btn" id="atab-listings-btn" onclick="switchAdminTab('listings')">📦 Listings Moderation</button>
+      <button class="tab-btn" id="atab-reports-btn" onclick="switchAdminTab('reports')">🚩 Dispute & Reports</button>
+      <button class="tab-btn" id="atab-rentals-btn" onclick="switchAdminTab('rentals')">📑 Platform Rentals</button>
+    </div>
+
+    <!-- Tab Contents -->
+    <div class="table-container" id="admin-table-container">
+      <div class="spinner"></div>
+    </div>
+
+  </div>
+
+  <!-- Resolve Report Modal -->
+  <div class="modal-backdrop" id="report-action-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Resolve Dispute / Report</h3>
+        <button class="modal-close-btn" onclick="closeReportActionModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="font-size: 0.9rem; margin-bottom: 1rem;" id="report-modal-details">...</div>
+
+        <div class="form-group">
+          <label class="form-label" for="report-new-status">Resolution Status</label>
+          <select id="report-new-status" class="form-select">
+            <option value="REVIEWING">REVIEWING (Under investigation)</option>
+            <option value="RESOLVED">RESOLVED (Action taken / completed)</option>
+            <option value="REJECTED">REJECTED (Invalid or false alarm)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="report-resolution-notes">Resolution / Action Notes</label>
+          <textarea id="report-resolution-notes" class="form-textarea" placeholder="Explain the outcome or disciplinary action taken..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeReportActionModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveReportResolution()">Save Resolution</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    let currentAdminTab = "users";
+    let activeReportId = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!API.isAuthenticated()) {
+        window.location.href = "/login.html";
+        return;
+      }
+      if (!API.isAdmin()) {
+        showToast("Administrator privileges required.", "error");
+        setTimeout(() => window.location.href = "/dashboard.html", 1000);
+        return;
+      }
+
+      await loadAdminData();
+    });
+
+    async function loadAdminData() {
+      try {
+        const metrics = await API.request("/api/admin/dashboard");
+        document.getElementById("stat-students").textContent = metrics.total_students;
+        document.getElementById("stat-listings").textContent = metrics.total_listings;
+        document.getElementById("stat-active").textContent = metrics.active_rentals;
+        document.getElementById("stat-overdue").textContent = metrics.overdue_rentals;
+        document.getElementById("stat-completed").textContent = metrics.completed_rentals;
+        document.getElementById("stat-reports").textContent = metrics.open_reports;
+        document.getElementById("stat-value").textContent = formatCurrency(metrics.total_value_shared);
+
+        await renderCurrentTab();
+      } catch (err) {
+        showToast("Failed to load admin metrics.", "error");
+      }
+    }
+
+    async function switchAdminTab(tab) {
+      currentAdminTab = tab;
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      const btn = document.getElementById(`atab-${tab}-btn`);
+      if (btn) btn.classList.add("active");
+
+      await renderCurrentTab();
+    }
+
+    async function renderCurrentTab() {
+      const container = document.getElementById("admin-table-container");
+      container.innerHTML = `<div class="spinner"></div>`;
+
+      try {
+        if (currentAdminTab === "users") {
+          const users = await API.request("/api/admin/users");
+          container.innerHTML = `
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Department & Year</th>
+                  <th>Role</th>
+                  <th>Trust Score</th>
+                  <th>Rating</th>
+                  <th>Listings / Rentals</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${users.map(u => `
+                  <tr>
+                    <td>
+                      <div style="font-weight: 700;">${u.name}</div>
+                      <div style="font-size: 0.75rem; color: var(--text-muted);">${u.email}</div>
+                    </td>
+                    <td>${u.department} • ${u.year}</td>
+                    <td><span class="badge ${u.role === 'admin' ? 'badge-danger' : 'badge-secondary'}">${u.role}</span></td>
+                    <td>${getTrustBadgeHtml(u.trust_score)}</td>
+                    <td>⭐ ${u.average_rating.toFixed(1)}</td>
+                    <td>${u.listings_count} items • ${u.rentals_count} rentals</td>
+                    <td>
+                      <span class="badge ${u.is_active ? 'badge-success' : 'badge-danger'}">
+                        ${u.is_active ? 'Active' : 'Suspended'}
+                      </span>
+                    </td>
+                    <td style="text-align: right;">
+                      ${u.role !== 'admin' ? `
+                        <button class="btn ${u.is_active ? 'btn-danger' : 'btn-success'} btn-sm" onclick="toggleUserSuspend(${u.id}, '${u.name}', ${u.is_active})">
+                          ${u.is_active ? 'Suspend' : 'Reactivate'}
+                        </button>
+                      ` : '<span style="font-size: 0.8rem; color: var(--text-light);">Protected</span>'}
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          `;
+        } else if (currentAdminTab === "listings") {
+          const listings = await API.request("/api/admin/listings");
+          container.innerHTML = `
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Listing Title</th>
+                  <th>Owner</th>
+                  <th>Category</th>
+                  <th>Daily Price</th>
+                  <th>Pickup</th>
+                  <th>Semester Mode</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${listings.map(l => `
+                  <tr>
+                    <td>
+                      <div style="font-weight: 700;"><a href="/listing.html?id=${l.id}">${l.title}</a></div>
+                      <div style="font-size: 0.75rem; color: var(--text-muted);">${l.condition} • Deposit: ${formatCurrency(l.security_deposit)}</div>
+                    </td>
+                    <td>${l.owner ? l.owner.name : 'Unknown'}</td>
+                    <td><span class="badge badge-primary">${l.category}</span></td>
+                    <td><strong>${l.rental_type === 'free' ? 'Free' : formatCurrency(l.price_per_day)}</strong></td>
+                    <td>📍 ${l.pickup_location}</td>
+                    <td>
+                      <button class="btn ${l.is_semester_resource ? 'btn-primary' : 'btn-secondary'} btn-sm" onclick="toggleSemester(${l.id})">
+                        ${l.is_semester_resource ? '★ Featured' : '☆ Not Featured'}
+                      </button>
+                    </td>
+                    <td style="text-align: right;">
+                      <button class="btn btn-danger btn-sm" onclick="removeListingAdmin(${l.id}, '${l.title.replace(/'/g, "\\'")}')">
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          `;
+        } else if (currentAdminTab === "reports") {
+          const reports = await API.request("/api/admin/reports");
+          if (reports.length === 0) {
+            container.innerHTML = `<div class="empty-state"><h4>No Reports Filed</h4><p>The campus community is running smoothly.</p></div>`;
+            return;
+          }
+
+          container.innerHTML = `
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Report ID</th>
+                  <th>Category</th>
+                  <th>Description</th>
+                  <th>Reporter</th>
+                  <th>Status</th>
+                  <th>Filed Date</th>
+                  <th style="text-align: right;">Resolve</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${reports.map(r => `
+                  <tr>
+                    <td>#${r.id}</td>
+                    <td><span class="badge badge-warning">${r.category}</span></td>
+                    <td style="max-width: 320px;">
+                      <div>${r.description}</div>
+                      ${r.resolution_notes ? `<div style="font-size: 0.75rem; color: var(--primary); margin-top: 0.2rem;"><strong>Resolution:</strong> ${r.resolution_notes}</div>` : ''}
+                    </td>
+                    <td>${r.reporter ? r.reporter.name : 'Unknown'}</td>
+                    <td>
+                      <span class="badge ${r.status === 'OPEN' ? 'badge-danger' : r.status === 'REVIEWING' ? 'badge-warning' : 'badge-success'}">
+                        ${r.status}
+                      </span>
+                    </td>
+                    <td>${formatDate(r.created_at)}</td>
+                    <td style="text-align: right;">
+                      <button class="btn btn-secondary btn-sm" onclick="openReportActionModal(${r.id}, '${r.category}', '${r.status}', '${(r.resolution_notes || '').replace(/'/g, "\\'")}')">
+                        Update Status
+                      </button>
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          `;
+        } else if (currentAdminTab === "rentals") {
+          const rentals = await API.request("/api/admin/rentals");
+          container.innerHTML = `
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Rental ID</th>
+                  <th>Item</th>
+                  <th>Borrower</th>
+                  <th>Owner</th>
+                  <th>Dates</th>
+                  <th>Late Fee</th>
+                  <th>Deposit Status</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rentals.map(r => `
+                  <tr>
+                    <td>#${r.id}</td>
+                    <td><strong>${r.listing ? r.listing.title : 'Item #' + r.listing_id}</strong></td>
+                    <td>${r.borrower ? r.borrower.name : 'Unknown'}</td>
+                    <td>${r.owner ? r.owner.name : 'Unknown'}</td>
+                    <td>${formatDate(r.start_date)} to ${formatDate(r.end_date)}</td>
+                    <td>${r.late_fee > 0 ? `<strong style="color: var(--danger);">${formatCurrency(r.late_fee)}</strong>` : '₹0'}</td>
+                    <td><span class="badge badge-secondary">${r.deposit_status}</span></td>
+                    <td>${getStatusBadgeHtml(r.status)}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          `;
+        }
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state"><p>Error loading admin data: ${err.message}</p></div>`;
+      }
+    }
+
+    async function toggleUserSuspend(userId, name, isCurrentlyActive) {
+      const action = isCurrentlyActive ? "suspend" : "reactivate";
+      if (!confirm(`Are you sure you want to ${action} student account for ${name}?`)) return;
+
+      try {
+        await API.request(`/api/admin/users/${userId}/toggle-suspend`, { method: "PUT" });
+        showToast(`User ${name} has been ${isCurrentlyActive ? 'suspended' : 'reactivated'}.`, "info");
+        await renderCurrentTab();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    async function toggleSemester(listingId) {
+      try {
+        const res = await API.request(`/api/admin/listings/${listingId}/toggle-semester`, { method: "PUT" });
+        showToast(res.message, "success");
+        await renderCurrentTab();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    async function removeListingAdmin(listingId, title) {
+      if (!confirm(`Remove listing "${title}" from the platform?`)) return;
+      try {
+        await API.request(`/api/admin/listings/${listingId}`, { method: "DELETE" });
+        showToast("Listing removed.", "info");
+        await renderCurrentTab();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    function openReportActionModal(reportId, cat, status, notes) {
+      activeReportId = reportId;
+      document.getElementById("report-modal-details").innerHTML = `Updating resolution for Report <strong>#${reportId}</strong> (${cat})`;
+      document.getElementById("report-new-status").value = status;
+      document.getElementById("report-resolution-notes").value = notes || "";
+      document.getElementById("report-action-modal").classList.add("show");
+    }
+
+    function closeReportActionModal() {
+      document.getElementById("report-action-modal").classList.remove("show");
+    }
+
+    async function saveReportResolution() {
+      const status = document.getElementById("report-new-status").value;
+      const notes = document.getElementById("report-resolution-notes").value.trim();
+
+      try {
+        await API.request(`/api/admin/reports/${activeReportId}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            status,
+            resolution_notes: notes || null
+          })
+        });
+        showToast("Report status updated.", "success");
+        closeReportActionModal();
+        await renderCurrentTab();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+  </script>
+</body>
+</html>

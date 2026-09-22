@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saved Resources — CampusShare</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="navbar-placeholder"></div>
+
+  <div class="container main-content" style="margin-top: 2rem;">
+    <div style="margin-bottom: 2rem;">
+      <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-main);">My Saved Resources</h1>
+      <p style="color: var(--text-muted); font-size: 1rem;">Keep track of textbooks, calculators, and lab tools you plan to borrow later.</p>
+    </div>
+
+    <div class="wishlist-grid" id="wishlist-grid">
+      <div class="spinner" style="grid-column: 1/-1;"></div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!API.isAuthenticated()) {
+        window.location.href = "/login.html";
+        return;
+      }
+      await loadWishlist();
+    });
+
+    async function loadWishlist() {
+      const grid = document.getElementById("wishlist-grid");
+      try {
+        const items = await API.request("/api/wishlist");
+        if (items.length === 0) {
+          grid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1;">
+              <div class="empty-icon">♡</div>
+              <h3>Your wishlist is empty</h3>
+              <p>Explore the campus marketplace and click the heart icon to save resources for your exams or lab practicals.</p>
+              <a href="/marketplace.html" class="btn btn-primary btn-sm">Explore Marketplace</a>
+            </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = items.map(w => {
+          const item = w.listing;
+          const imgUrl = (item.images && item.images.length > 0) ? item.images[0].image_url : '/uploads/item_1_textbooks.svg';
+
+          return `
+            <div class="card listing-card" onclick="window.location.href='/listing.html?id=${item.id}'">
+              <div class="card-img-wrap">
+                <img src="${imgUrl}" alt="${item.title}">
+                <button class="card-fav-btn active" title="Remove from wishlist" onclick="removeFromWishlist(event, ${item.id})">
+                  ♥
+                </button>
+              </div>
+              <div class="card-body">
+                <div class="card-category-row">
+                  <span class="badge badge-primary">${item.category}</span>
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">${item.condition}</span>
+                </div>
+                <h3 class="card-title">${item.title}</h3>
+                <div class="card-meta">
+                  <span>📍 ${item.pickup_location}</span>
+                  <span>•</span>
+                  <span>⭐ ${item.owner ? item.owner.average_rating.toFixed(1) : '5.0'}</span>
+                </div>
+                <div class="card-footer">
+                  <div class="card-price">
+                    <span class="amount">${item.rental_type === 'free' ? 'Free Borrow' : formatCurrency(item.price_per_day) + '<span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">/day</span>'}</span>
+                  </div>
+                  <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); window.location.href='/listing.html?id=${item.id}'">Rent Now</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      } catch (err) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><p>Failed to load saved items.</p></div>`;
+      }
+    }
+
+    async function removeFromWishlist(e, listingId) {
+      e.stopPropagation();
+      try {
+        await API.request(`/api/wishlist/${listingId}`, { method: "DELETE" });
+        showToast("Removed from wishlist.", "info");
+        await loadWishlist();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+  </script>
+</body>
+</html>

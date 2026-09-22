@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resource Details — CampusShare</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .listing-layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 2.5rem;
+      margin-top: 2rem;
+      align-items: start;
+    }
+
+    /* Left Column: Gallery & Details */
+    .gallery-wrap {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .gallery-main-img {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gallery-main-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .gallery-thumbs {
+      display: flex;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: #fafafa;
+      border-top: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .gallery-thumb {
+      width: 70px;
+      height: 50px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      opacity: 0.7;
+      transition: var(--transition);
+    }
+    .gallery-thumb.active, .gallery-thumb:hover {
+      border-color: var(--primary);
+      opacity: 1;
+    }
+
+    /* Details Box */
+    .details-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+    }
+    .details-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.25;
+      margin-bottom: 0.75rem;
+    }
+    .details-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+      background: var(--bg-main);
+      padding: 1.25rem;
+      border-radius: var(--radius-md);
+    }
+    .spec-item .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+    }
+    .spec-item .value {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .desc-content {
+      font-size: 1rem;
+      color: #334155;
+      line-height: 1.7;
+      white-space: pre-line;
+    }
+
+    /* Right Column: Pricing & Owner Card */
+    .action-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 1.75rem;
+      position: sticky;
+      top: 5.5rem;
+    }
+    .price-display-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .price-display-wrap .price-big {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--primary);
+    }
+    .price-display-wrap .price-unit {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .quote-breakdown {
+      background: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin: 1.25rem 0;
+      font-size: 0.9rem;
+    }
+    .quote-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      color: var(--text-muted);
+    }
+    .quote-row.total {
+      border-top: 1px solid var(--border);
+      padding-top: 0.75rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--text-main);
+    }
+
+    /* Owner Card */
+    .owner-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .owner-header {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .owner-avatar-lg {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .owner-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      text-align: center;
+      background: var(--bg-main);
+      padding: 0.75rem;
+      border-radius: var(--radius-md);
+      margin: 1rem 0;
+    }
+    .owner-stat-num {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .owner-stat-lbl {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 900px) {
+      .listing-layout {
+        grid-template-columns: 1fr;
+      }
+      .action-card {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="navbar-placeholder"></div>
+
+  <div class="container main-content" id="listing-container">
+    <div class="spinner" style="margin-top: 4rem;"></div>
+  </div>
+
+  <!-- Rental Request Modal -->
+  <div class="modal-backdrop" id="rental-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-request-title">Request Rental</h3>
+        <button class="modal-close-btn" onclick="closeRentalModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom: 1.25rem;">
+          <div style="font-weight: 700; font-size: 1.1rem;" id="modal-item-name">Item Name</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted);" id="modal-item-meta">Category • Location</div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="modal-start-date">Start Date <span class="required">*</span></label>
+            <input type="date" id="modal-start-date" class="form-control" required onchange="calculateModalQuote()">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="modal-end-date">End Date <span class="required">*</span></label>
+            <input type="date" id="modal-end-date" class="form-control" required onchange="calculateModalQuote()">
+          </div>
+        </div>
+
+        <!-- Live Quote Box inside Modal -->
+        <div class="quote-breakdown" id="modal-quote-box">
+          <div class="quote-row">
+            <span>Rental Duration:</span>
+            <span id="mq-days">1 day</span>
+          </div>
+          <div class="quote-row">
+            <span>Rental Fee:</span>
+            <span id="mq-rental-fee">₹0</span>
+          </div>
+          <div class="quote-row">
+            <span>Security Deposit (Refundable):</span>
+            <span id="mq-deposit">₹0</span>
+          </div>
+          <div class="quote-row total">
+            <span>Total Demo Settlement:</span>
+            <span id="mq-total" style="color: var(--primary);">₹0</span>
+          </div>
+        </div>
+
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-sm); padding: 0.6rem 0.8rem; font-size: 0.8rem; color: #166534; margin-bottom: 1rem;">
+          💳 <strong>Demo Payment / Payment Integration Ready:</strong> In Version 1, money is simulated in-app. Security deposits are tracked directly in database state.
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="modal-message">Message to Owner (Optional)</label>
+          <textarea id="modal-message" class="form-textarea" placeholder="Introduce yourself, course code, or propose preferred pickup time..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeRentalModal()">Cancel</button>
+        <button class="btn btn-primary" id="confirm-request-btn" onclick="submitRentalRequest()">Confirm Rental Request</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Item Modal -->
+  <div class="modal-backdrop" id="report-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Report Listing</h3>
+        <button class="modal-close-btn" onclick="closeReportModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="report-category">Report Category</label>
+          <select id="report-category" class="form-select">
+            <option value="Scam / suspicious">Scam / Suspicious Listing</option>
+            <option value="Incorrect information">Incorrect Information or Fake Item</option>
+            <option value="Damaged item">Item Condition Misrepresented</option>
+            <option value="Harassment">Inappropriate or Harassing Content</option>
+            <option value="Other">Other Violation</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="report-description">Explanation <span class="required">*</span></label>
+          <textarea id="report-description" class="form-textarea" placeholder="Describe the issue so campus moderators can review..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeReportModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="submitReport()">Submit Report</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    let listing = null;
+    let currentUser = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      currentUser = API.getUser();
+      const params = new URLSearchParams(window.location.search);
+      const listingId = params.get("id");
+
+      if (!listingId) {
+        window.location.href = "/marketplace.html";
+        return;
+      }
+
+      await loadListingDetails(listingId);
+    });
+
+    async function loadListingDetails(id) {
+      const container = document.getElementById("listing-container");
+      try {
+        listing = await API.request(`/api/listings/${id}`);
+        renderListing(listing);
+      } catch (err) {
+        container.innerHTML = `
+          <div class="empty-state" style="margin-top: 4rem;">
+            <div class="empty-icon">❌</div>
+            <h3>Resource Not Found</h3>
+            <p>${err.message || 'This item may have been removed or rented out.'}</p>
+            <a href="/marketplace.html" class="btn btn-primary btn-sm">Return to Marketplace</a>
+          </div>
+        `;
+      }
+    }
+
+    function renderListing(l) {
+      const isOwner = currentUser && currentUser.id === l.owner_id;
+      const isAdmin = API.isAdmin();
+      const primaryImg = l.images && l.images.length > 0 ? l.images[0].image_url : '/uploads/item_1_textbooks.svg';
+
+      // Set default dates for quote calculator (today + 1 to today + 5)
+      const today = new Date();
+      const sDate = new Date(today.getTime() + 86400000).toISOString().split('T')[0];
+      const eDate = new Date(today.getTime() + (86400000 * 5)).toISOString().split('T')[0];
+
+      document.title = `${l.title} — CampusShare`;
+
+      document.getElementById("listing-container").innerHTML = `
+        <div style="margin-bottom: 1rem;">
+          <a href="/marketplace.html" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">← Back to Marketplace</a>
+        </div>
+
+        <div class="listing-layout">
+          <!-- Left Column -->
+          <div>
+            <!-- Gallery -->
+            <div class="gallery-wrap">
+              <div class="gallery-main-img">
+                <img id="main-image-display" src="${primaryImg}" alt="${l.title}">
+              </div>
+              ${l.images && l.images.length > 1 ? `
+                <div class="gallery-thumbs">
+                  ${l.images.map((img, idx) => `
+                    <div class="gallery-thumb ${idx === 0 ? 'active' : ''}" onclick="changeGalleryImage('${img.image_url}', this)">
+                      <img src="${img.image_url}" alt="Thumbnail">
+                    </div>
+                  `).join("")}
+                </div>
+              ` : ''}
+            </div>
+
+            <!-- Details Content -->
+            <div class="details-box">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                <span class="badge badge-primary">${l.category}</span>
+                ${getStatusBadgeHtml(l.status)}
+              </div>
+
+              <h1 class="details-title">${l.title}</h1>
+
+              <div class="details-meta-row">
+                <span>📍 <strong>Pickup:</strong> ${l.pickup_location}</span>
+                <span>•</span>
+                <span>🏷️ <strong>Condition:</strong> ${l.condition}</span>
+                <span>•</span>
+                <span>📅 <strong>Listed:</strong> ${formatDate(l.created_at)}</span>
+              </div>
+
+              <!-- Specifications Grid -->
+              <div class="specs-grid">
+                <div class="spec-item">
+                  <div class="label">Rental Type</div>
+                  <div class="value">${l.rental_type === 'free' ? 'Free Borrow' : 'Paid Rental'}</div>
+                </div>
+                <div class="spec-item">
+                  <div class="label">Security Deposit</div>
+                  <div class="value">${formatCurrency(l.security_deposit)} (Refundable)</div>
+                </div>
+                <div class="spec-item">
+                  <div class="label">Daily Rate</div>
+                  <div class="value">${l.rental_type === 'free' ? 'Free' : formatCurrency(l.price_per_day) + '/day'}</div>
+                </div>
+                <div class="spec-item">
+                  <div class="label">Weekly Discount Rate</div>
+                  <div class="value">${l.price_per_week > 0 ? formatCurrency(l.price_per_week) + '/week' : 'N/A'}</div>
+                </div>
+                <div class="spec-item">
+                  <div class="label">Max Duration</div>
+                  <div class="value">${l.max_duration_days} Days Allowed</div>
+                </div>
+                <div class="spec-item">
+                  <div class="label">Semester Resource</div>
+                  <div class="value">${l.is_semester_resource ? 'Yes (Curated)' : 'Standard'}</div>
+                </div>
+              </div>
+
+              <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.75rem;">Description</h3>
+              <div class="desc-content">${l.description}</div>
+
+              <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                <button class="btn btn-secondary btn-sm" onclick="openReportModal()">🚩 Report Problem</button>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Item ID: #${l.id}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div>
+            <!-- Action & Estimate Card -->
+            <div class="action-card">
+              <div class="price-display-wrap">
+                <div>
+                  <div class="price-big">${l.rental_type === 'free' ? 'Free Borrow' : formatCurrency(l.price_per_day)}</div>
+                  <div class="price-unit">${l.rental_type === 'free' ? 'Zero rental fee' : 'Per day rental'}</div>
+                </div>
+                <div>
+                  ${l.security_deposit > 0 ? `<div style="text-align: right; font-size: 0.85rem; color: var(--text-muted);">Deposit: <strong>${formatCurrency(l.security_deposit)}</strong></div>` : ''}
+                </div>
+              </div>
+
+              ${isOwner ? `
+                <div style="background: var(--primary-light); padding: 1rem; border-radius: var(--radius-md); text-align: center; margin-bottom: 1.25rem;">
+                  <span style="font-weight: 700; color: var(--primary); font-size: 0.9rem;">You own this listing</span>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                  <a href="/create-listing.html?edit=${l.id}" class="btn btn-secondary btn-block">Edit Listing</a>
+                  <button class="btn btn-danger btn-block" onclick="deleteCurrentListing(${l.id})">Delete</button>
+                </div>
+              ` : `
+                <!-- Date selector for instant authoritative quote -->
+                <div class="form-row" style="margin-bottom: 0.5rem;">
+                  <div class="form-group">
+                    <label class="form-label" style="font-size: 0.75rem;">Start Date</label>
+                    <input type="date" id="est-start-date" class="form-control" value="${sDate}" onchange="updateLiveQuote()">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" style="font-size: 0.75rem;">End Date</label>
+                    <input type="date" id="est-end-date" class="form-control" value="${eDate}" onchange="updateLiveQuote()">
+                  </div>
+                </div>
+
+                <!-- Live Quote Breakdown -->
+                <div class="quote-breakdown" id="live-quote-box">
+                  <div class="quote-row">
+                    <span>Duration:</span>
+                    <span id="lq-days">4 days</span>
+                  </div>
+                  <div class="quote-row">
+                    <span>Rental Cost:</span>
+                    <span id="lq-cost">Calculating...</span>
+                  </div>
+                  <div class="quote-row">
+                    <span>Security Deposit:</span>
+                    <span id="lq-deposit">${formatCurrency(l.security_deposit)}</span>
+                  </div>
+                  <div class="quote-row total">
+                    <span>Total Estimate:</span>
+                    <span id="lq-total" style="color: var(--primary);">Calculating...</span>
+                  </div>
+                </div>
+
+                ${l.status === 'available' ? `
+                  <button class="btn btn-primary btn-block btn-lg" onclick="openRentalModal()">
+                    ${l.rental_type === 'free' ? 'Request to Borrow' : 'Request to Rent'}
+                  </button>
+                ` : `
+                  <button class="btn btn-secondary btn-block btn-lg" disabled>
+                    Currently Rented Out
+                  </button>
+                `}
+              `}
+            </div>
+
+            <!-- Owner Reputation Card -->
+            <div class="owner-card">
+              <div class="owner-header">
+                <div class="owner-avatar-lg">
+                  ${l.owner ? l.owner.name.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <div>
+                  <h4 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.15rem;">
+                    <a href="/profile.html?id=${l.owner.id}" style="color: inherit;">${l.owner.name}</a>
+                  </h4>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">${l.owner.department} • ${l.owner.year}</div>
+                </div>
+              </div>
+
+              <div style="margin-bottom: 0.75rem;">
+                ${getTrustBadgeHtml(l.owner.trust_score)}
+              </div>
+
+              <div class="owner-stats-grid">
+                <div>
+                  <div class="owner-stat-num">⭐ ${l.owner.average_rating.toFixed(1)}</div>
+                  <div class="owner-stat-lbl">${l.owner.rating_count} Reviews</div>
+                </div>
+                <div>
+                  <div class="owner-stat-num">98%</div>
+                  <div class="owner-stat-lbl">On-Time</div>
+                </div>
+                <div>
+                  <div class="owner-stat-num">${l.owner.trust_score}/100</div>
+                  <div class="owner-stat-lbl">Trust Score</div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <button class="btn btn-secondary btn-block btn-sm" onclick="messageOwner(${l.owner.id}, ${l.id})">
+                  💬 Message Owner
+                </button>
+                <a href="/profile.html?id=${l.owner.id}" class="btn btn-outline-primary btn-block btn-sm">
+                  View Profile
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      `;
+
+      // Trigger initial quote calculation
+      if (!isOwner) {
+        updateLiveQuote();
+      }
+    }
+
+    function changeGalleryImage(url, thumbEl) {
+      document.getElementById("main-image-display").src = url;
+      document.querySelectorAll(".gallery-thumb").forEach(t => t.classList.remove("active"));
+      thumbEl.classList.add("active");
+    }
+
+    async function updateLiveQuote() {
+      const sDate = document.getElementById("est-start-date").value;
+      const eDate = document.getElementById("est-end-date").value;
+      if (!sDate || !eDate || !listing) return;
+
+      try {
+        const quote = await API.request("/api/rentals/quote", {
+          method: "POST",
+          body: JSON.stringify({
+            listing_id: listing.id,
+            start_date: sDate,
+            end_date: eDate
+          })
+        });
+
+        document.getElementById("lq-days").textContent = `${quote.days} day${quote.days === 1 ? '' : 's'}`;
+        document.getElementById("lq-cost").textContent = formatCurrency(quote.rental_cost);
+        document.getElementById("lq-deposit").textContent = formatCurrency(quote.security_deposit);
+        document.getElementById("lq-total").textContent = formatCurrency(quote.total_amount);
+      } catch (err) {
+        // invalid date range
+      }
+    }
+
+    function openRentalModal() {
+      if (!API.isAuthenticated()) {
+        showToast("Please sign in to request rentals.", "info");
+        setTimeout(() => window.location.href = "/login.html", 800);
+        return;
+      }
+
+      document.getElementById("modal-item-name").textContent = listing.title;
+      document.getElementById("modal-item-meta").textContent = `${listing.category} • Pickup: ${listing.pickup_location}`;
+      document.getElementById("modal-start-date").value = document.getElementById("est-start-date").value;
+      document.getElementById("modal-end-date").value = document.getElementById("est-end-date").value;
+      document.getElementById("modal-request-title").textContent = listing.rental_type === 'free' ? 'Request to Borrow' : 'Request to Rent';
+
+      calculateModalQuote();
+      document.getElementById("rental-modal").classList.add("show");
+    }
+
+    function closeRentalModal() {
+      document.getElementById("rental-modal").classList.remove("show");
+    }
+
+    async function calculateModalQuote() {
+      const sDate = document.getElementById("modal-start-date").value;
+      const eDate = document.getElementById("modal-end-date").value;
+      if (!sDate || !eDate || !listing) return;
+
+      try {
+        const quote = await API.request("/api/rentals/quote", {
+          method: "POST",
+          body: JSON.stringify({
+            listing_id: listing.id,
+            start_date: sDate,
+            end_date: eDate
+          })
+        });
+
+        document.getElementById("mq-days").textContent = `${quote.days} day${quote.days === 1 ? '' : 's'}`;
+        document.getElementById("mq-rental-fee").textContent = formatCurrency(quote.rental_cost);
+        document.getElementById("mq-deposit").textContent = formatCurrency(quote.security_deposit);
+        document.getElementById("mq-total").textContent = formatCurrency(quote.total_amount);
+      } catch (err) {
+        showToast("End date must be on or after start date.", "error");
+      }
+    }
+
+    async function submitRentalRequest() {
+      const sDate = document.getElementById("modal-start-date").value;
+      const eDate = document.getElementById("modal-end-date").value;
+      const message = document.getElementById("modal-message").value.trim();
+      const btn = document.getElementById("confirm-request-btn");
+
+      if (!sDate || !eDate) {
+        showToast("Please choose valid dates.", "error");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Submitting Request...";
+
+      try {
+        await API.request("/api/rental-requests", {
+          method: "POST",
+          body: JSON.stringify({
+            listing_id: listing.id,
+            start_date: sDate,
+            end_date: eDate,
+            message: message || null
+          })
+        });
+
+        showToast("Rental request submitted to owner successfully!", "success");
+        closeRentalModal();
+
+        setTimeout(() => {
+          window.location.href = "/rentals.html?tab=borrowed";
+        }, 800);
+      } catch (err) {
+        showToast(err.message, "error");
+        btn.disabled = false;
+        btn.textContent = "Confirm Rental Request";
+      }
+    }
+
+    function messageOwner(ownerId, listingId) {
+      if (!API.isAuthenticated()) {
+        showToast("Please sign in to message the owner.", "info");
+        setTimeout(() => window.location.href = "/login.html", 800);
+        return;
+      }
+      window.location.href = `/messages.html?user_id=${ownerId}&listing_id=${listingId}`;
+    }
+
+    async function deleteCurrentListing(id) {
+      if (!confirm("Are you sure you want to delete this listing?")) return;
+      try {
+        await API.request(`/api/listings/${id}`, { method: "DELETE" });
+        showToast("Listing deleted successfully.", "success");
+        setTimeout(() => window.location.href = "/marketplace.html", 600);
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    function openReportModal() {
+      if (!API.isAuthenticated()) {
+        showToast("Please sign in to report an item.", "info");
+        setTimeout(() => window.location.href = "/login.html", 800);
+        return;
+      }
+      document.getElementById("report-modal").classList.add("show");
+    }
+
+    function closeReportModal() {
+      document.getElementById("report-modal").classList.remove("show");
+    }
+
+    async function submitReport() {
+      const category = document.getElementById("report-category").value;
+      const description = document.getElementById("report-description").value.trim();
+
+      if (!description || description.length < 10) {
+        showToast("Please provide at least 10 characters explaining the issue.", "error");
+        return;
+      }
+
+      try {
+        await API.request("/api/reports", {
+          method: "POST",
+          body: JSON.stringify({
+            listing_id: listing.id,
+            reported_user_id: listing.owner_id,
+            category,
+            description
+          })
+        });
+        showToast("Report submitted. Platform moderators have been notified.", "success");
+        closeReportModal();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+  </script>
+</body>
+</html>

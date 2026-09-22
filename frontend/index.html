@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusShare — Campus Resource Sharing & Peer-to-Peer Rental Hub</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    /* Hero Styles */
+    .hero {
+      padding: 4.5rem 0 3.5rem;
+      background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.85rem;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: 3.25rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: var(--text-main);
+      line-height: 1.15;
+      max-width: 800px;
+      margin: 0 auto 1.25rem;
+    }
+    .hero p.lead {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto 2.25rem;
+    }
+    .hero-search-box {
+      max-width: 580px;
+      margin: 0 auto 2rem;
+      display: flex;
+      gap: 0.5rem;
+      background: #ffffff;
+      padding: 0.5rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl);
+      border: 1px solid var(--border);
+    }
+    .hero-search-box input {
+      flex: 1;
+      border: none;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      outline: none;
+    }
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* Section Styles */
+    .section-title-wrap {
+      text-align: center;
+      margin-bottom: 2.75rem;
+    }
+    .section-title-wrap h2 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+    .section-title-wrap p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    /* Categories Grid */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 4rem;
+    }
+    .category-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 1rem;
+      text-align: center;
+      transition: var(--transition);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .category-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+    .category-icon {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: var(--radius-md);
+      background: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      color: var(--primary);
+    }
+    .category-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    /* Steps Grid */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+    .step-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      position: relative;
+    }
+    .step-num {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .step-card h4 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .step-card p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Why Section */
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+    .why-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      display: flex;
+      gap: 1.25rem;
+    }
+    .why-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    /* Listings Grid */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar Placeholder -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">
+        <span>🎓</span> Hyperlocal University Resource Network
+      </div>
+      <h1>Share More. <span style="color: var(--primary);">Spend Less.</span></h1>
+      <p class="lead">Rent and borrow useful resources, textbooks, lab equipment, and tech tools from verified students on your campus.</p>
+
+      <form class="hero-search-box" id="hero-search-form" onsubmit="event.preventDefault(); window.location.href='/marketplace.html?search=' + encodeURIComponent(document.getElementById('hero-search-input').value);">
+        <input type="text" id="hero-search-input" placeholder="Search textbooks, oscilloscopes, calculators, Arduino kits...">
+        <button type="submit" class="btn btn-primary">Find Items</button>
+      </form>
+
+      <div class="hero-buttons">
+        <a href="/marketplace.html" class="btn btn-primary btn-lg">Browse Marketplace</a>
+        <a href="/create-listing.html" class="btn btn-secondary btn-lg">+ List an Item</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container" style="padding-top: 3.5rem;">
+
+      <!-- Popular Categories -->
+      <div class="section-title-wrap">
+        <h2>Popular Categories</h2>
+        <p>Everything you need for your coursework, labs, and semester projects.</p>
+      </div>
+
+      <div class="category-grid">
+        <div class="category-card" onclick="window.location.href='/marketplace.html?category=Textbooks'">
+          <div class="category-icon">📚</div>
+          <div class="category-name">Textbooks</div>
+        </div>
+        <div class="category-card" onclick="window.location.href='/marketplace.html?category=Electronics'">
+          <div class="category-icon">⚡</div>
+          <div class="category-name">Electronics</div>
+        </div>
+        <div class="category-card" onclick="window.location.href='/marketplace.html?category=Lab Equipment'">
+          <div class="category-icon">🔬</div>
+          <div class="category-name">Lab Equipment</div>
+        </div>
+        <div class="category-card" onclick="window.location.href='/marketplace.html?category=Tools'">
+          <div class="category-icon">🛠️</div>
+          <div class="category-name">Tools & Kits</div>
+        </div>
+        <div class="category-card" onclick="window.location.href='/marketplace.html?category=Lab Coats'">
+          <div class="category-icon">🥼</div>
+          <div class="category-name">Lab Coats</div>
+        </div>
+        <div class="category-card" onclick="window.location.href='/marketplace.html?category=Calculators'">
+          <div class="category-icon">🔢</div>
+          <div class="category-name">Calculators</div>
+        </div>
+        <div class="category-card" onclick="window.location.href='/marketplace.html?category=Other'">
+          <div class="category-icon">📦</div>
+          <div class="category-name">Other Items</div>
+        </div>
+      </div>
+
+      <!-- Semester Resources Section -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
+        <div>
+          <span class="badge badge-primary" style="margin-bottom: 0.4rem;">Featured</span>
+          <h2 style="font-size: 1.8rem; font-weight: 800;">Popular This Semester</h2>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">High-demand academic essentials curated for ongoing university modules.</p>
+        </div>
+        <a href="/marketplace.html?semester=1" class="btn btn-outline-primary btn-sm">View All Semester Items →</a>
+      </div>
+
+      <div class="items-grid" id="semester-items-grid">
+        <!-- Injected via JavaScript -->
+        <div class="spinner"></div>
+      </div>
+
+      <!-- How It Works Section -->
+      <div class="section-title-wrap" style="margin-top: 2rem;">
+        <span class="badge badge-secondary" style="margin-bottom: 0.4rem;">Workflow</span>
+        <h2>How CampusShare Works</h2>
+        <p>A safe, 5-step peer-to-peer sharing lifecycle built exclusively for students.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h4>Find an Item</h4>
+          <p>Search textbooks, instruments, or tech tools available right on your campus with transparent pricing or free borrow.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h4>Request a Rental</h4>
+          <p>Select your dates and receive an instant quote with zero hidden fees. Owner reviews and approves your request.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h4>Pick It Up</h4>
+          <p>Coordinate a safe meeting point on campus—the Main Library, Engineering Block, or Student Center.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <h4>Return It</h4>
+          <p>Return the resource on time and in good condition. The owner inspects it and your security deposit is released.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">5</div>
+          <h4>Build Trust Score</h4>
+          <p>Earn positive peer reviews and boost your Campus Trust Score from 50 up to 100/100 for campus reputation.</p>
+        </div>
+      </div>
+
+      <!-- Why CampusShare -->
+      <div class="section-title-wrap">
+        <h2>Why CampusShare?</h2>
+        <p>Designed to solve real problems students face every semester.</p>
+      </div>
+
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon">🔒</div>
+          <div>
+            <h4 style="font-weight: 700; margin-bottom: 0.35rem;">Student Verified</h4>
+            <p style="font-size: 0.875rem; color: var(--text-muted);">Sign-ups are strictly gated by university email domains. You only interact with fellow students.</p>
+          </div>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">📍</div>
+          <div>
+            <h4 style="font-weight: 700; margin-bottom: 0.35rem;">Hyperlocal Campus Locations</h4>
+            <p style="font-size: 0.875rem; color: var(--text-muted);">No shipping fees or long delivery waits. Pick up and return items directly between lectures.</p>
+          </div>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">💰</div>
+          <div>
+            <h4 style="font-weight: 700; margin-bottom: 0.35rem;">Affordable & Fair</h4>
+            <p style="font-size: 0.875rem; color: var(--text-muted);">Pay a fraction of retail price for items you only need for a few weeks, or borrow for free.</p>
+          </div>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">🛡️</div>
+          <div>
+            <h4 style="font-weight: 700; margin-bottom: 0.35rem;">Protected Security Deposits</h4>
+            <p style="font-size: 0.875rem; color: var(--text-muted);">Deposits remain held until safe return, protecting owners from damage and loss.</p>
+          </div>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">⭐</div>
+          <div>
+            <h4 style="font-weight: 700; margin-bottom: 0.35rem;">Transparent Trust Scoring</h4>
+            <p style="font-size: 0.875rem; color: var(--text-muted);">Algorithmic campus reputation tracks on-time returns, positive reviews, and accountability.</p>
+          </div>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">🌱</div>
+          <div>
+            <h4 style="font-weight: 700; margin-bottom: 0.35rem;">Campus Sustainability</h4>
+            <p style="font-size: 0.875rem; color: var(--text-muted);">Promotes circular sharing, reducing plastic waste and unused equipment sitting in dorms.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand-logo">
+            <div class="brand-badge">⚡</div>
+            <div>Campus<span class="accent">Share</span></div>
+          </div>
+          <p>Hyperlocal campus resource sharing and peer-to-peer rental hub for university students. Share more, spend less.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Marketplace</h4>
+          <ul>
+            <li><a href="/marketplace.html">All Listings</a></li>
+            <li><a href="/marketplace.html?category=Textbooks">Textbooks</a></li>
+            <li><a href="/marketplace.html?category=Electronics">Electronics</a></li>
+            <li><a href="/marketplace.html?category=Lab Equipment">Lab Equipment</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="/create-listing.html">List an Item</a></li>
+            <li><a href="/rentals.html">My Rentals</a></li>
+            <li><a href="/dashboard.html">Student Dashboard</a></li>
+            <li><a href="/login.html">Demo Logins</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Campus Safety</h4>
+          <ul>
+            <li><a href="#how-it-works">Trust Score Engine</a></li>
+            <li><a href="#how-it-works">Security Deposits</a></li>
+            <li><a href="/admin.html">Dispute Moderation</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2025 CampusShare. Built with FastAPI, PostgreSQL & Vanilla JS.</div>
+        <div>Configured Domain: @university.edu</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      loadSemesterItems();
+    });
+
+    async function loadSemesterItems() {
+      const grid = document.getElementById("semester-items-grid");
+      try {
+        const items = await API.request("/api/listings?is_semester_resource=true");
+        if (!items || items.length === 0) {
+          grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><p>No featured semester items currently listed.</p></div>`;
+          return;
+        }
+
+        grid.innerHTML = items.slice(0, 8).map(item => `
+          <div class="card listing-card" onclick="window.location.href='/listing.html?id=${item.id}'">
+            <div class="card-img-wrap">
+              <img src="${item.images && item.images.length > 0 ? item.images[0].image_url : '/uploads/item_1_textbooks.svg'}" alt="${item.title}">
+              <span class="card-semester-tag">Semester Resource</span>
+            </div>
+            <div class="card-body">
+              <div class="card-category-row">
+                <span class="badge badge-primary">${item.category}</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">${item.condition}</span>
+              </div>
+              <h3 class="card-title">${item.title}</h3>
+              <div class="card-meta">
+                <span>📍 ${item.pickup_location}</span>
+                <span>•</span>
+                <span>⭐ ${item.owner ? item.owner.average_rating.toFixed(1) : '5.0'}</span>
+              </div>
+              <div class="card-footer">
+                <div class="card-price">
+                  <span class="amount">${item.rental_type === 'free' ? 'Free Borrow' : formatCurrency(item.price_per_day) + '<span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">/day</span>'}</span>
+                  ${item.security_deposit > 0 ? `<span class="subtext">Deposit: ${formatCurrency(item.security_deposit)}</span>` : ''}
+                </div>
+                <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation(); window.location.href='/listing.html?id=${item.id}'">View</button>
+              </div>
+            </div>
+          </div>
+        `).join("");
+      } catch (err) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><p>Failed to load semester resources.</p></div>`;
+      }
+    }
+  </script>
+</body>
+</html>

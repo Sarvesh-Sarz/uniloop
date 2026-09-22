@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Rentals & Requests — CampusShare</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .rentals-layout {
+      margin-top: 2rem;
+    }
+    .incoming-requests-box {
+      background: #fdf4ff;
+      border: 1px solid #f0abfc;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .rental-card-full {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      display: grid;
+      grid-template-columns: 120px 1fr 240px;
+      gap: 1.5rem;
+      align-items: center;
+      transition: var(--transition);
+    }
+    .rental-card-full:hover {
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+    .rental-card-thumb {
+      width: 120px;
+      height: 90px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: #f1f5f9;
+    }
+    .rental-card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .countdown-tag {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.3rem 0.75rem;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.35rem;
+    }
+    .tag-ok { background: var(--primary-light); color: var(--primary); }
+    .tag-warn { background: var(--warning-light); color: #b45309; }
+    .tag-overdue { background: var(--danger-light); color: var(--danger); font-weight: 800; }
+
+    /* Star Rating Selector */
+    .star-rating {
+      display: flex;
+      gap: 0.4rem;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #cbd5e1;
+      margin: 0.5rem 0 1rem;
+    }
+    .star-rating .star.selected, .star-rating .star:hover, .star-rating .star.hovered {
+      color: #f59e0b;
+    }
+
+    @media (max-width: 860px) {
+      .rental-card-full {
+        grid-template-columns: 1fr;
+      }
+      .rental-card-thumb {
+        width: 100%;
+        height: 160px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="navbar-placeholder"></div>
+
+  <div class="container main-content rentals-layout">
+
+    <div style="margin-bottom: 2rem;">
+      <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-main);">My Rentals & Sharing Hub</h1>
+      <p style="color: var(--text-muted); font-size: 1rem;">Track your borrowed tools, items lent to peers, return dates, and security deposits.</p>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tab-nav">
+      <button class="tab-btn active" id="tab-borrowed-btn" onclick="switchTab('borrowed')">
+        🎒 Items Borrowed (<span id="count-borrowed">0</span>)
+      </button>
+      <button class="tab-btn" id="tab-lent-btn" onclick="switchTab('lent')">
+        🤝 Items Lent (<span id="count-lent">0</span>)
+      </button>
+      <button class="tab-btn" id="tab-completed-btn" onclick="switchTab('completed')">
+        ✓ Completed History (<span id="count-completed">0</span>)
+      </button>
+      <button class="tab-btn" id="tab-overdue-btn" onclick="switchTab('overdue')">
+        ⚠️ Overdue (<span id="count-overdue">0</span>)
+      </button>
+    </div>
+
+    <!-- Pending Requests Box (Shown on Lent Tab if any) -->
+    <div class="incoming-requests-box" id="incoming-requests-box" style="display: none;">
+      <h3 style="font-size: 1.15rem; font-weight: 800; color: #86198f; margin-bottom: 0.75rem;">
+        📥 Incoming Rental Requests (<span id="pending-req-count">0</span>)
+      </h3>
+      <div id="incoming-requests-list"></div>
+    </div>
+
+    <!-- Rentals List Container -->
+    <div id="rentals-list-container">
+      <div class="spinner"></div>
+    </div>
+
+  </div>
+
+  <!-- Return Item Modal -->
+  <div class="modal-backdrop" id="return-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Return Resource</h3>
+        <button class="modal-close-btn" onclick="closeReturnModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
+          Specify the condition in which you are returning this item to the owner.
+        </p>
+
+        <div class="form-group">
+          <label style="display: block; font-weight: 700; margin-bottom: 0.6rem;">Item Return Condition:</label>
+          <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer; padding: 0.6rem 0.85rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+              <input type="radio" name="return_condition" value="good" checked onchange="toggleDamageFields()">
+              <div>
+                <strong>Returned in good condition</strong>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">No damage or issues. Security deposit marked refundable.</div>
+              </div>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer; padding: 0.6rem 0.85rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+              <input type="radio" name="return_condition" value="damaged" onchange="toggleDamageFields()">
+              <div>
+                <strong style="color: var(--danger);">Report an issue / damage</strong>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Item was damaged, broken, or has missing parts. Flagged for review.</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div id="damage-fields" style="display: none; margin-top: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="damage-notes">Describe the issue/damage <span class="required">*</span></label>
+            <textarea id="damage-notes" class="form-textarea" placeholder="Provide accurate details about what happened..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeReturnModal()">Cancel</button>
+        <button class="btn btn-primary" id="submit-return-btn" onclick="submitItemReturn()">Submit Return</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rate Rental Modal -->
+  <div class="modal-backdrop" id="rate-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Rate Your Campus Peer</h3>
+        <button class="modal-close-btn" onclick="closeRateModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-muted); font-size: 0.9rem;" id="rate-modal-subtext">
+          Share your experience to help maintain campus trust.
+        </p>
+
+        <div style="text-align: center; margin: 1.5rem 0;">
+          <div class="star-rating" id="star-rating-box">
+            <span class="star" data-val="1">★</span>
+            <span class="star" data-val="2">★</span>
+            <span class="star" data-val="3">★</span>
+            <span class="star" data-val="4">★</span>
+            <span class="star" data-val="5">★</span>
+          </div>
+          <div id="star-label" style="font-weight: 700; color: var(--primary); font-size: 0.9rem;">Select a rating</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="rate-review-text">Review Comments (Optional)</label>
+          <textarea id="rate-review-text" class="form-textarea" placeholder="Was the item in good shape? Was communication easy and on-time?"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeRateModal()">Cancel</button>
+        <button class="btn btn-primary" id="submit-rating-btn" onclick="submitRating()">Submit Review</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    let activeTab = "borrowed";
+    let allRentals = [];
+    let pendingRequests = [];
+    let targetRentalId = null;
+    let selectedRating = 5;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!API.isAuthenticated()) {
+        window.location.href = "/login.html";
+        return;
+      }
+
+      // Check URL query param for initial tab
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("tab")) {
+        activeTab = params.get("tab");
+      }
+
+      setupStarRating();
+      await loadRentalsData();
+    });
+
+    function setupStarRating() {
+      const stars = document.querySelectorAll("#star-rating-box .star");
+      const label = document.getElementById("star-label");
+      const labels = ["", "Poor", "Fair", "Good", "Very Good", "Excellent!"];
+
+      stars.forEach(s => {
+        s.addEventListener("click", () => {
+          selectedRating = parseInt(s.dataset.val);
+          highlightStars(selectedRating);
+          label.textContent = `${selectedRating} Stars — ${labels[selectedRating]}`;
+        });
+      });
+      highlightStars(5);
+      label.textContent = "5 Stars — Excellent!";
+    }
+
+    function highlightStars(val) {
+      document.querySelectorAll("#star-rating-box .star").forEach(s => {
+        const v = parseInt(s.dataset.val);
+        if (v <= val) s.classList.add("selected");
+        else s.classList.remove("selected");
+      });
+    }
+
+    async function loadRentalsData() {
+      try {
+        allRentals = await API.request("/api/rentals?tab=all");
+        pendingRequests = await API.request("/api/rental-requests?role=owner");
+
+        updateTabCounts();
+        switchTab(activeTab);
+      } catch (err) {
+        showToast("Failed to load rentals.", "error");
+      }
+    }
+
+    function updateTabCounts() {
+      const me = API.getUser();
+      const borrowed = allRentals.filter(r => r.borrower_id === me.id && ["ACTIVE", "RETURN_REQUESTED", "OVERDUE", "DISPUTED"].includes(r.status)).length;
+      const lent = allRentals.filter(r => r.owner_id === me.id && ["ACTIVE", "RETURN_REQUESTED", "OVERDUE", "DISPUTED"].includes(r.status)).length;
+      const completed = allRentals.filter(r => r.status === "COMPLETED").length;
+      const overdue = allRentals.filter(r => r.status === "OVERDUE").length;
+
+      document.getElementById("count-borrowed").textContent = borrowed;
+      document.getElementById("count-lent").textContent = lent;
+      document.getElementById("count-completed").textContent = completed;
+      document.getElementById("count-overdue").textContent = overdue;
+
+      const pending = pendingRequests.filter(req => req.status === "REQUESTED");
+      document.getElementById("pending-req-count").textContent = pending.length;
+      const reqBox = document.getElementById("incoming-requests-box");
+
+      if (pending.length > 0) {
+        reqBox.style.display = "block";
+        document.getElementById("incoming-requests-list").innerHTML = pending.map(req => `
+          <div style="background: #ffffff; border: 1px solid #f0abfc; border-radius: var(--radius-md); padding: 1rem; margin-top: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <div style="font-weight: 700; font-size: 1rem;">${req.listing ? req.listing.title : 'Item #' + req.listing_id}</div>
+              <div style="font-size: 0.85rem; color: var(--text-muted);">
+                Requested by <strong>${req.borrower ? req.borrower.name : 'Student'}</strong> (${req.borrower ? req.borrower.department : ''})
+                • Dates: <strong>${formatDate(req.start_date)}</strong> to <strong>${formatDate(req.end_date)}</strong>
+              </div>
+              ${req.message ? `<div style="font-size: 0.8rem; font-style: italic; color: #475569; margin-top: 0.3rem;">"${req.message}"</div>` : ''}
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-success btn-sm" onclick="approveRentalRequest(${req.id})">Approve Request</button>
+              <button class="btn btn-secondary btn-sm" onclick="rejectRentalRequest(${req.id})">Decline</button>
+            </div>
+          </div>
+        `).join("");
+      } else {
+        reqBox.style.display = "none";
+      }
+    }
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      const btn = document.getElementById(`tab-${tab}-btn`);
+      if (btn) btn.classList.add("active");
+
+      renderRentals();
+    }
+
+    function renderRentals() {
+      const container = document.getElementById("rentals-list-container");
+      const me = API.getUser();
+
+      let filtered = [];
+      if (activeTab === "borrowed") {
+        filtered = allRentals.filter(r => r.borrower_id === me.id && ["ACTIVE", "RETURN_REQUESTED", "OVERDUE", "DISPUTED"].includes(r.status));
+      } else if (activeTab === "lent") {
+        filtered = allRentals.filter(r => r.owner_id === me.id && ["ACTIVE", "RETURN_REQUESTED", "OVERDUE", "DISPUTED"].includes(r.status));
+      } else if (activeTab === "completed") {
+        filtered = allRentals.filter(r => r.status === "COMPLETED");
+      } else if (activeTab === "overdue") {
+        filtered = allRentals.filter(r => r.status === "OVERDUE");
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>No ${activeTab} rentals found</h3>
+            <p>You have no items in this category right now.</p>
+            <a href="/marketplace.html" class="btn btn-outline-primary btn-sm">Browse Campus Marketplace</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(r => {
+        const isBorrower = r.borrower_id === me.id;
+        const otherStudent = isBorrower ? r.owner : r.borrower;
+        const otherRole = isBorrower ? "Owner" : "Borrower";
+        const imgUrl = (r.listing && r.listing.images && r.listing.images.length > 0) ? r.listing.images[0].image_url : '/uploads/item_1_textbooks.svg';
+
+        let tagCls = "tag-ok";
+        if (r.status === "OVERDUE" || (r.days_remaining !== null && r.days_remaining < 0)) tagCls = "tag-overdue";
+        else if (r.days_remaining === 1 || r.days_remaining === 0) tagCls = "tag-warn";
+
+        return `
+          <div class="rental-card-full">
+            <div class="rental-card-thumb">
+              <img src="${imgUrl}" alt="Item">
+            </div>
+
+            <div>
+              <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.35rem;">
+                <span class="badge ${isBorrower ? 'badge-primary' : 'badge-secondary'}">
+                  ${isBorrower ? 'You are Borrowing' : 'You are Lending'}
+                </span>
+                ${getStatusBadgeHtml(r.status)}
+              </div>
+
+              <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">
+                <a href="/listing.html?id=${r.listing_id}" style="color: inherit;">
+                  ${r.listing ? r.listing.title : 'Item #' + r.listing_id}
+                </a>
+              </h3>
+
+              <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                ${otherRole}: <strong>${otherStudent ? otherStudent.name : 'Student'}</strong> (${otherStudent ? otherStudent.department : ''})
+                • Rental Period: <strong>${formatDate(r.start_date)}</strong> to <strong>${formatDate(r.end_date)}</strong>
+              </div>
+
+              <div style="display: flex; gap: 1.5rem; font-size: 0.85rem; flex-wrap: wrap;">
+                <div>Cost: <strong>${formatCurrency(r.rental_cost)}</strong></div>
+                <div>Deposit: <strong>${formatCurrency(r.security_deposit)}</strong> (${r.deposit_status})</div>
+                ${r.late_fee > 0 ? `<div style="color: var(--danger); font-weight: 800;">Late Fee: ${formatCurrency(r.late_fee)}</div>` : ''}
+              </div>
+
+              <div class="countdown-tag ${tagCls}">
+                ⏱️ ${r.countdown_text || 'Active'}
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; justify-content: center;">
+              <!-- Borrower Return Button -->
+              ${isBorrower && ["ACTIVE", "OVERDUE"].includes(r.status) ? `
+                <button class="btn btn-primary btn-sm btn-block" onclick="openReturnModal(${r.id})">
+                  ↩ Return Item
+                </button>
+              ` : ''}
+
+              <!-- Owner Finalize Completion Button -->
+              {!isBorrower && ["RETURN_REQUESTED", "ACTIVE", "OVERDUE", "DISPUTED"].includes(r.status) ? `
+                <button class="btn btn-success btn-sm btn-block" onclick="completeRental(${r.id})">
+                  ✓ Confirm & Release Deposit
+                </button>
+              ` : ''}
+
+              <!-- Rate User Button (Completed tab) -->
+              ${r.status === "COMPLETED" ? `
+                <button class="btn btn-outline-primary btn-sm btn-block" onclick="openRateModal(${r.id}, '${otherStudent ? otherStudent.name : 'peer'}')">
+                  ⭐ Leave Review
+                </button>
+              ` : ''}
+
+              <button class="btn btn-secondary btn-sm btn-block" onclick="window.location.href='/messages.html?user_id=${otherStudent ? otherStudent.id : ''}&listing_id=${r.listing_id}'">
+                💬 Message ${otherRole}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function approveRentalRequest(reqId) {
+      try {
+        await API.request(`/api/rental-requests/${reqId}/approve`, { method: "PUT" });
+        showToast("Rental approved! Active rental initiated.", "success");
+        await loadRentalsData();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    async function rejectRentalRequest(reqId) {
+      if (!confirm("Decline this rental request?")) return;
+      try {
+        await API.request(`/api/rental-requests/${reqId}/reject`, { method: "PUT" });
+        showToast("Request declined.", "info");
+        await loadRentalsData();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    function openReturnModal(rentalId) {
+      targetRentalId = rentalId;
+      document.getElementById("damage-notes").value = "";
+      document.querySelector('input[name="return_condition"][value="good"]').checked = true;
+      toggleDamageFields();
+      document.getElementById("return-modal").classList.add("show");
+    }
+
+    function closeReturnModal() {
+      document.getElementById("return-modal").classList.remove("show");
+    }
+
+    function toggleDamageFields() {
+      const isDamaged = document.querySelector('input[name="return_condition"]:checked').value === "damaged";
+      document.getElementById("damage-fields").style.display = isDamaged ? "block" : "none";
+    }
+
+    async function submitItemReturn() {
+      const cond = document.querySelector('input[name="return_condition"]:checked').value;
+      const notes = document.getElementById("damage-notes").value.trim();
+
+      if (cond === "damaged" && (!notes || notes.length < 5)) {
+        showToast("Please describe the damage.", "error");
+        return;
+      }
+
+      const btn = document.getElementById("submit-return-btn");
+      btn.disabled = true;
+
+      try {
+        await API.request(`/api/rentals/${targetRentalId}/return`, {
+          method: "PUT",
+          body: JSON.stringify({
+            return_condition: cond,
+            damage_notes: notes || null
+          })
+        });
+
+        showToast(cond === "good" ? "Return submitted in good condition! Deposit refundable." : "Damage report submitted. Owner has been notified.", "success");
+        closeReturnModal();
+        await loadRentalsData();
+      } catch (err) {
+        showToast(err.message, "error");
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function completeRental(rentalId) {
+      if (!confirm("Confirm you received the item back safely? This will mark the rental completed and release the security deposit.")) return;
+      try {
+        await API.request(`/api/rentals/${rentalId}/complete`, { method: "PUT" });
+        showToast("Rental finalized! Deposit refunded and borrower trust score updated.", "success");
+        await loadRentalsData();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    function openRateModal(rentalId, name) {
+      targetRentalId = rentalId;
+      document.getElementById("rate-modal-subtext").textContent = `Rate your experience with ${name}.`;
+      document.getElementById("rate-review-text").value = "";
+      document.getElementById("rate-modal").classList.add("show");
+    }
+
+    function closeRateModal() {
+      document.getElementById("rate-modal").classList.remove("show");
+    }
+
+    async function submitRating() {
+      const review = document.getElementById("rate-review-text").value.trim();
+      const btn = document.getElementById("submit-rating-btn");
+      btn.disabled = true;
+
+      try {
+        await API.request("/api/ratings", {
+          method: "POST",
+          body: JSON.stringify({
+            rental_id: targetRentalId,
+            rating: selectedRating,
+            review: review || null
+          })
+        });
+
+        showToast("Rating submitted! Peer reputation updated.", "success");
+        closeRateModal();
+      } catch (err) {
+        showToast(err.message, "error");
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

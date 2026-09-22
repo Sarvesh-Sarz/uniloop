@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Profile — CampusShare</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .profile-layout {
+      margin-top: 2rem;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    /* Left: User Card */
+    .profile-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+    .profile-avatar-xl {
+      width: 5.5rem;
+      height: 5.5rem;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 2.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      box-shadow: var(--shadow-md);
+    }
+    .profile-name {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 0.25rem;
+    }
+    .profile-dept {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    /* Trust Engine Explainer Box */
+    .trust-explainer-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      text-align: left;
+    }
+    .trust-factor-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+    }
+
+    /* Right: Reviews & Listings */
+    .reviews-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .review-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 860px) {
+      .profile-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="navbar-placeholder"></div>
+
+  <div class="container main-content">
+    <div class="profile-layout" id="profile-layout">
+      <div class="spinner" style="grid-column: 1/-1; margin-top: 4rem;"></div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const params = new URLSearchParams(window.location.search);
+      let targetUserId = params.get("id");
+
+      if (!targetUserId) {
+        if (!API.isAuthenticated()) {
+          window.location.href = "/login.html";
+          return;
+        }
+        const me = API.getUser();
+        targetUserId = me.id;
+      }
+
+      await loadProfile(targetUserId);
+    });
+
+    async function loadProfile(userId) {
+      const container = document.getElementById("profile-layout");
+      try {
+        const user = await API.request(`/api/users/${userId}/public`);
+        const ratings = await API.request(`/api/users/${userId}/ratings`);
+        const allListings = await API.request("/api/listings");
+        const userListings = allListings.filter(l => l.owner_id === parseInt(userId));
+
+        document.title = `${user.name} — CampusShare Profile`;
+
+        container.innerHTML = `
+          <!-- Left Column: User Card & Trust Breakdown -->
+          <div>
+            <div class="profile-card">
+              <div class="profile-avatar-xl">${user.name.charAt(0).toUpperCase()}</div>
+              <h2 class="profile-name">${user.name}</h2>
+              <div class="profile-dept">${user.department} • ${user.year}</div>
+
+              <div style="margin-bottom: 1.25rem;">
+                ${getTrustBadgeHtml(user.trust_score)}
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; background: var(--bg-main); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+                <div>
+                  <div style="font-size: 1.35rem; font-weight: 800;">⭐ ${user.average_rating.toFixed(1)}</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">${user.rating_count} Reviews</div>
+                </div>
+                <div>
+                  <div style="font-size: 1.35rem; font-weight: 800;">${user.successful_rentals}</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Completed Rentals</div>
+                </div>
+              </div>
+
+              <div style="font-size: 0.8rem; color: var(--text-muted);">
+                Member on Campus Since ${new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+              </div>
+            </div>
+
+            <!-- Trust Score Algorithm Breakdown (Great for Interviews) -->
+            <div class="trust-explainer-card">
+              <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text-main);">
+                🛡️ Trust Score Engine
+              </h4>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+                CampusShare computes this score using a transparent, rule-based algorithmic model:
+              </p>
+
+              <div class="trust-factor-row">
+                <span>On-time completed rental</span>
+                <strong style="color: var(--success);">+5 pts</strong>
+              </div>
+              <div class="trust-factor-row">
+                <span>Positive peer review (≥ 4★)</span>
+                <strong style="color: var(--success);">+3 pts</strong>
+              </div>
+              <div class="trust-factor-row">
+                <span>Clean item return</span>
+                <strong style="color: var(--success);">+2 pts</strong>
+              </div>
+              <div class="trust-factor-row">
+                <span>Late return</span>
+                <strong style="color: var(--danger);">-5 pts</strong>
+              </div>
+              <div class="trust-factor-row">
+                <span>Confirmed damage / dispute</span>
+                <strong style="color: var(--danger);">-10 pts</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Peer Reviews & Active Listings -->
+          <div>
+            <!-- Peer Reviews Section -->
+            <div style="margin-bottom: 2rem;">
+              <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.5rem;">
+                Peer Reviews & Feedback (${ratings.length})
+              </h3>
+
+              <div class="reviews-list">
+                ${ratings.length === 0 ? `
+                  <div class="empty-state" style="padding: 2rem;">
+                    <p style="margin: 0;">No reviews received yet. Ratings are recorded upon completed campus rentals.</p>
+                  </div>
+                ` : ratings.map(r => `
+                  <div class="review-card">
+                    <div class="review-header">
+                      <div>
+                        <strong>${r.reviewer ? r.reviewer.name : 'Student'}</strong>
+                        <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 0.4rem;">(${r.reviewer ? r.reviewer.department : ''})</span>
+                      </div>
+                      <div style="color: #f59e0b; font-weight: 700;">
+                        ${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}
+                      </div>
+                    </div>
+                    <p style="font-size: 0.9rem; color: #334155; line-height: 1.5; margin: 0.4rem 0;">
+                      ${r.review ? `"${r.review}"` : 'No written comment left.'}
+                    </p>
+                    <div style="font-size: 0.75rem; color: var(--text-light); text-align: right;">
+                      ${formatDate(r.created_at)}
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+
+            <!-- Active Listings by this Student -->
+            <div>
+              <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 1rem;">
+                Resources Listed by ${user.name} (${userListings.length})
+              </h3>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem;">
+                ${userListings.length === 0 ? `
+                  <p style="color: var(--text-muted); font-size: 0.9rem;">No active items currently available from this student.</p>
+                ` : userListings.map(l => `
+                  <div class="card listing-card" onclick="window.location.href='/listing.html?id=${l.id}'">
+                    <div class="card-img-wrap" style="aspect-ratio: 16/9;">
+                      <img src="${l.images && l.images.length > 0 ? l.images[0].image_url : '/uploads/item_1_textbooks.svg'}" alt="${l.title}">
+                    </div>
+                    <div class="card-body" style="padding: 1rem;">
+                      <span class="badge badge-primary" style="font-size: 0.65rem; margin-bottom: 0.3rem;">${l.category}</span>
+                      <h4 class="card-title" style="font-size: 0.95rem;">${l.title}</h4>
+                      <div class="card-footer" style="padding-top: 0.5rem;">
+                        <span style="font-weight: 800; color: var(--primary);">${l.rental_type === 'free' ? 'Free Borrow' : formatCurrency(l.price_per_day) + '/day'}</span>
+                      </div>
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+
+          </div>
+        `;
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><p>Failed to load profile.</p></div>`;
+      }
+    }
+  </script>
+</body>
+</html>

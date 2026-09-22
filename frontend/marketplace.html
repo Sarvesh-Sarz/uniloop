@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Marketplace — CampusShare</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .marketplace-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+      align-items: start;
+    }
+
+    /* Filter Sidebar */
+    .filter-sidebar {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      position: sticky;
+      top: 5.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .filter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .filter-header h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .clear-filters-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Results Header */
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      background: #ffffff;
+      padding: 1rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+    .results-count {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .sort-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .sort-wrap label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Items Grid */
+    .listings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .marketplace-layout {
+        grid-template-columns: 1fr;
+      }
+      .filter-sidebar {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="navbar-placeholder"></div>
+
+  <div class="container main-content">
+    <div class="marketplace-layout">
+
+      <!-- Filter Sidebar -->
+      <aside class="filter-sidebar">
+        <div class="filter-header">
+          <h3>Filters</h3>
+          <button type="button" class="clear-filters-btn" id="clear-filters-btn">Reset All</button>
+        </div>
+
+        <form id="filter-form">
+          <!-- Keyword Search -->
+          <div class="form-group">
+            <label class="form-label" for="search-input">Search Keywords</label>
+            <input type="text" id="search-input" class="form-control" placeholder="Item name, model, tag...">
+          </div>
+
+          <!-- Category -->
+          <div class="form-group">
+            <label class="form-label" for="category-select">Category</label>
+            <select id="category-select" class="form-select">
+              <option value="All">All Categories</option>
+              <option value="Textbooks">Textbooks</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Lab Equipment">Lab Equipment</option>
+              <option value="Tools">Tools</option>
+              <option value="Lab Coats">Lab Coats</option>
+              <option value="Calculators">Calculators</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <!-- Rental Type -->
+          <div class="form-group">
+            <label class="form-label" for="rental-type-select">Rental Type</label>
+            <select id="rental-type-select" class="form-select">
+              <option value="All">All (Paid & Free)</option>
+              <option value="paid">Paid Rental</option>
+              <option value="free">Free Borrow</option>
+            </select>
+          </div>
+
+          <!-- Condition -->
+          <div class="form-group">
+            <label class="form-label" for="condition-select">Condition</label>
+            <select id="condition-select" class="form-select">
+              <option value="All">Any Condition</option>
+              <option value="New">New</option>
+              <option value="Like New">Like New</option>
+              <option value="Good">Good</option>
+              <option value="Used">Used</option>
+              <option value="Heavily Used">Heavily Used</option>
+            </select>
+          </div>
+
+          <!-- Campus Location -->
+          <div class="form-group">
+            <label class="form-label" for="location-select">Campus Pickup Location</label>
+            <select id="location-select" class="form-select">
+              <option value="All">Any Location</option>
+              <option value="Main Library">Main Library</option>
+              <option value="Engineering Block">Engineering Block</option>
+              <option value="Science Block">Science Block</option>
+              <option value="Hostel Block A">Hostel Block A</option>
+              <option value="Hostel Block B">Hostel Block B</option>
+              <option value="Student Center">Student Center</option>
+              <option value="Cafeteria">Cafeteria</option>
+            </select>
+          </div>
+
+          <!-- Department -->
+          <div class="form-group">
+            <label class="form-label" for="dept-select">Owner Department</label>
+            <select id="dept-select" class="form-select">
+              <option value="All">All Departments</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Mechanical">Mechanical</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Electrical">Electrical</option>
+              <option value="Civil">Civil</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Chemical">Chemical</option>
+            </select>
+          </div>
+
+          <!-- Semester Resource Toggle -->
+          <div class="form-group" style="margin-top: 1rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+              <input type="checkbox" id="semester-checkbox">
+              <span>Popular This Semester Only</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
+            Apply Filters
+          </button>
+        </form>
+      </aside>
+
+      <!-- Main Results Column -->
+      <section>
+        <div class="results-header">
+          <div class="results-count" id="results-count">Loading listings...</div>
+          <div class="sort-wrap">
+            <label for="sort-select">Sort by:</label>
+            <select id="sort-select" class="form-select" style="width: auto; padding: 0.35rem 0.75rem; font-size: 0.85rem;">
+              <option value="newest">Newest First</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="rating_desc">Highest Owner Rating</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="listings-grid" id="listings-grid">
+          <div class="spinner" style="grid-column: 1/-1;"></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    let currentWishlist = new Set();
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Parse URL search params
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("search")) document.getElementById("search-input").value = params.get("search");
+      if (params.get("category")) document.getElementById("category-select").value = params.get("category");
+      if (params.get("semester") === "1") document.getElementById("semester-checkbox").checked = true;
+
+      // Load user wishlist set if authenticated
+      if (API.isAuthenticated()) {
+        try {
+          const wishes = await API.request("/api/wishlist");
+          wishes.forEach(w => currentWishlist.add(w.listing_id));
+        } catch (e) {}
+      }
+
+      // Initial listings fetch
+      fetchListings();
+
+      // Listeners
+      document.getElementById("filter-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        fetchListings();
+      });
+
+      document.getElementById("sort-select").addEventListener("change", () => {
+        fetchListings();
+      });
+
+      document.getElementById("clear-filters-btn").addEventListener("click", () => {
+        document.getElementById("search-input").value = "";
+        document.getElementById("category-select").value = "All";
+        document.getElementById("rental-type-select").value = "All";
+        document.getElementById("condition-select").value = "All";
+        document.getElementById("location-select").value = "All";
+        document.getElementById("dept-select").value = "All";
+        document.getElementById("semester-checkbox").checked = false;
+        document.getElementById("sort-select").value = "newest";
+        fetchListings();
+      });
+    });
+
+    async function fetchListings() {
+      const grid = document.getElementById("listings-grid");
+      const countEl = document.getElementById("results-count");
+      grid.innerHTML = `<div class="spinner" style="grid-column: 1/-1;"></div>`;
+
+      const search = document.getElementById("search-input").value.trim();
+      const category = document.getElementById("category-select").value;
+      const rental_type = document.getElementById("rental-type-select").value;
+      const condition = document.getElementById("condition-select").value;
+      const location = document.getElementById("location-select").value;
+      const department = document.getElementById("dept-select").value;
+      const semesterOnly = document.getElementById("semester-checkbox").checked;
+      const sort = document.getElementById("sort-select").value;
+
+      const q = new URLSearchParams();
+      if (search) q.set("search", search);
+      if (category !== "All") q.set("category", category);
+      if (rental_type !== "All") q.set("rental_type", rental_type);
+      if (condition !== "All") q.set("condition", condition);
+      if (location !== "All") q.set("pickup_location", location);
+      if (department !== "All") q.set("department", department);
+      if (semesterOnly) q.set("is_semester_resource", "true");
+      if (sort) q.set("sort", sort);
+
+      try {
+        const items = await API.request(`/api/listings?${q.toString()}`);
+        countEl.textContent = `Showing ${items.length} campus resource${items.length === 1 ? '' : 's'}`;
+
+        if (items.length === 0) {
+          grid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1;">
+              <div class="empty-icon">🔍</div>
+              <h3>No matching listings found</h3>
+              <p>Try adjusting your search keywords or resetting filters.</p>
+              <button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('clear-filters-btn').click()">Reset Filters</button>
+            </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = items.map(item => {
+          const isSaved = currentWishlist.has(item.id);
+          const imgUrl = item.images && item.images.length > 0 ? item.images[0].image_url : '/uploads/item_1_textbooks.svg';
+
+          return `
+            <div class="card listing-card" onclick="window.location.href='/listing.html?id=${item.id}'">
+              <div class="card-img-wrap">
+                <img src="${imgUrl}" alt="${item.title}">
+                <button class="card-fav-btn ${isSaved ? 'active' : ''}" title="${isSaved ? 'Remove from wishlist' : 'Save to wishlist'}" onclick="toggleWishlist(event, ${item.id}, this)">
+                  ${isSaved ? '♥' : '♡'}
+                </button>
+                ${item.is_semester_resource ? `<span class="card-semester-tag">Semester Resource</span>` : ''}
+              </div>
+              <div class="card-body">
+                <div class="card-category-row">
+                  <span class="badge badge-primary">${item.category}</span>
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">${item.condition}</span>
+                </div>
+                <h3 class="card-title">${item.title}</h3>
+                <div class="card-meta">
+                  <span>📍 ${item.pickup_location}</span>
+                  <span>•</span>
+                  <span>⭐ ${item.owner ? item.owner.average_rating.toFixed(1) : '5.0'} (${item.owner ? item.owner.rating_count : 0})</span>
+                </div>
+                <div class="card-footer">
+                  <div class="card-price">
+                    <span class="amount">${item.rental_type === 'free' ? 'Free Borrow' : formatCurrency(item.price_per_day) + '<span style="font-size: 0.75rem; font-weight: normal; color: var(--text-muted);">/day</span>'}</span>
+                    ${item.security_deposit > 0 ? `<span class="subtext">Deposit: ${formatCurrency(item.security_deposit)}</span>` : ''}
+                  </div>
+                  <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation(); window.location.href='/listing.html?id=${item.id}'">View</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+      } catch (err) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><p>Failed to load marketplace listings.</p></div>`;
+      }
+    }
+
+    async function toggleWishlist(e, listingId, btn) {
+      e.stopPropagation();
+      if (!API.isAuthenticated()) {
+        showToast("Please sign in to save items to your wishlist.", "info");
+        setTimeout(() => window.location.href = "/login.html", 1000);
+        return;
+      }
+
+      const isSaved = currentWishlist.has(listingId);
+      try {
+        if (isSaved) {
+          await API.request(`/api/wishlist/${listingId}`, { method: "DELETE" });
+          currentWishlist.delete(listingId);
+          btn.classList.remove("active");
+          btn.textContent = "♡";
+          showToast("Removed from wishlist.", "info");
+        } else {
+          await API.request(`/api/wishlist/${listingId}`, { method: "POST" });
+          currentWishlist.add(listingId);
+          btn.classList.add("active");
+          btn.textContent = "♥";
+          showToast("Saved to wishlist!", "success");
+        }
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+  </script>
+</body>
+</html>

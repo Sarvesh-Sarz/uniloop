@@ -1,0 +1,23 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Database (don't upload - will be created fresh)
+campusshare.db
+
+# Uploaded images
+uploads/
+
+# Environment variables (contains secrets)
+.env
+
+# VS Code
+.vscode/
+
+# Windows
+Thumbs.db
+Desktop.ini

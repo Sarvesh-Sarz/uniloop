@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In — CampusShare</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .auth-page {
+      display: flex;
+      min-height: calc(100vh - 4.25rem);
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.25rem;
+    }
+    .auth-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      max-width: 460px;
+      width: 100%;
+      box-shadow: var(--shadow-xl);
+    }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .auth-header h2 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 0.35rem;
+    }
+    .auth-header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .demo-accounts-box {
+      margin-top: 1.75rem;
+      padding: 1.25rem;
+      background: var(--primary-light);
+      border: 1px dashed var(--primary);
+      border-radius: var(--radius-md);
+    }
+    .demo-accounts-box h5 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .demo-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .demo-chip {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.825rem;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: var(--transition);
+    }
+    .demo-chip:hover {
+      border-color: var(--primary);
+      background: #fafafa;
+    }
+    .demo-chip strong {
+      color: var(--text-main);
+    }
+    .demo-chip span {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="navbar-placeholder"></div>
+
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h2>Welcome Back</h2>
+        <p>Log in with your university credentials</p>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="email">University Email</label>
+          <input type="email" id="email" class="form-control" placeholder="student@university.edu" required>
+        </div>
+
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+            <label class="form-label" for="password" style="margin-bottom: 0;">Password</label>
+            <a href="#" id="forgot-password-link" style="font-size: 0.8rem;">Forgot password?</a>
+          </div>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary btn-block btn-lg" style="margin-top: 1rem;">
+          Sign In
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+        New to campus? <a href="/register.html" style="font-weight: 600;">Create an account</a>
+      </div>
+
+      <!-- Quick Demo Credentials For Interview / Presentation -->
+      <div class="demo-accounts-box">
+        <h5>⚡ Instant Demo Login (Click to fill)</h5>
+        <div class="demo-btn-group">
+          <button type="button" class="demo-chip" onclick="fillCredentials('sarah@university.edu', 'Password123!')">
+            <div>
+              <strong>Sarah Chen (Owner)</strong><br>
+              <span>Electronics • Trust: 94/100</span>
+            </div>
+            <span class="badge badge-primary">Student A</span>
+          </button>
+          <button type="button" class="demo-chip" onclick="fillCredentials('alex@university.edu', 'Password123!')">
+            <div>
+              <strong>Alex Rivera (Borrower)</strong><br>
+              <span>Mechanical • Trust: 88/100</span>
+            </div>
+            <span class="badge badge-primary">Student B</span>
+          </button>
+          <button type="button" class="demo-chip" onclick="fillCredentials('admin@university.edu', 'AdminPassword123!')">
+            <div>
+              <strong>Administrator</strong><br>
+              <span>Campus Moderator</span>
+            </div>
+            <span class="badge badge-danger">Admin</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="modal-backdrop" id="forgot-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Reset Password</h3>
+        <button class="modal-close-btn" onclick="closeForgotModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
+          Enter your university email address. A password reset token will be dispatched to your student inbox (simulated for demo).
+        </p>
+        <div class="form-group">
+          <label class="form-label" for="reset-email">University Email</label>
+          <input type="email" id="reset-email" class="form-control" placeholder="student@university.edu">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeForgotModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitForgotPassword()">Send Reset Instructions</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    // Check if session expired query param is set
+    if (window.location.search.includes("expired=1")) {
+      showToast("Your session has expired. Please sign in again.", "info");
+    }
+
+    function fillCredentials(email, password) {
+      document.getElementById("email").value = email;
+      document.getElementById("password").value = password;
+      showToast(`Filled credentials for ${email}`, "info");
+    }
+
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const btn = document.getElementById("submit-btn");
+
+      btn.disabled = true;
+      btn.textContent = "Signing in...";
+
+      try {
+        const res = await API.request("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ email, password })
+        });
+
+        API.setSession(res.access_token, res.user);
+        showToast(`Welcome back, ${res.user.name}!`, "success");
+
+        setTimeout(() => {
+          if (res.user.role === "admin") {
+            window.location.href = "/admin.html";
+          } else {
+            window.location.href = "/dashboard.html";
+          }
+        }, 600);
+      } catch (err) {
+        showToast(err.message, "error");
+        btn.disabled = false;
+        btn.textContent = "Sign In";
+      }
+    });
+
+    // Forgot Password Modal
+    document.getElementById("forgot-password-link").addEventListener("click", (e) => {
+      e.preventDefault();
+      document.getElementById("forgot-modal").classList.add("show");
+    });
+
+    function closeForgotModal() {
+      document.getElementById("forgot-modal").classList.remove("show");
+    }
+
+    async function submitForgotPassword() {
+      const email = document.getElementById("reset-email").value.trim();
+      if (!email) {
+        showToast("Please enter your university email.", "error");
+        return;
+      }
+      try {
+        const res = await API.request("/api/auth/forgot-password", {
+          method: "POST",
+          body: JSON.stringify({ email })
+        });
+        showToast(res.message, "success");
+        closeForgotModal();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+  </script>
+</body>
+</html>

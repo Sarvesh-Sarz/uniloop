@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard — CampusShare</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .dashboard-header {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin: 2rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .user-profile-summary {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .user-avatar-xl {
+      width: 4.5rem;
+      height: 4.5rem;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 2rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* KPI Cards Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .kpi-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .kpi-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.4rem;
+    }
+    .kpi-value {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .kpi-sub {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      margin-top: 0.2rem;
+    }
+
+    /* Active Rentals Grid */
+    .rentals-active-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 3rem;
+    }
+    .rental-item-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: relative;
+    }
+    .countdown-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-full);
+      width: fit-content;
+    }
+    .countdown-ok { background: var(--primary-light); color: var(--primary); }
+    .countdown-warn { background: var(--warning-light); color: #b45309; }
+    .countdown-danger { background: var(--danger-light); color: var(--danger); font-weight: 800; }
+
+    /* Tables */
+    .table-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+      overflow-x: auto;
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+    table.data-table th {
+      padding: 0.75rem 1rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    table.data-table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    table.data-table tr:hover {
+      background: var(--bg-main);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="navbar-placeholder"></div>
+
+  <div class="container main-content">
+
+    <!-- Header / Profile Banner -->
+    <div class="dashboard-header" id="dash-header">
+      <div class="user-profile-summary">
+        <div class="user-avatar-xl" id="avatar-circle">U</div>
+        <div>
+          <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 0.2rem;" id="user-name">Loading Profile...</h2>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;" id="user-dept-year">...</div>
+          <div id="user-trust-tag"></div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.75rem;">
+        <a href="/create-listing.html" class="btn btn-primary">+ List New Item</a>
+        <a href="/marketplace.html" class="btn btn-secondary">Explore Market</a>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Active Rentals</div>
+        <div class="kpi-value" id="kpi-active-rentals">0</div>
+        <div class="kpi-sub">Items currently checked out</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">My Listings</div>
+        <div class="kpi-value" id="kpi-my-listings">0</div>
+        <div class="kpi-sub">Campus resources listed</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Items Borrowed</div>
+        <div class="kpi-value" id="kpi-borrowed">0</div>
+        <div class="kpi-sub">Total times you borrowed</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Items Lent</div>
+        <div class="kpi-value" id="kpi-lent">0</div>
+        <div class="kpi-sub">Total times you lent</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Campus Trust Score</div>
+        <div class="kpi-value" id="kpi-trust">50<span style="font-size: 1rem; color: var(--text-muted);">/100</span></div>
+        <div class="kpi-sub" id="kpi-trust-tier">Reliable</div>
+      </div>
+    </div>
+
+    <!-- Active Rentals Section with Live Countdowns -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h3 style="font-size: 1.35rem; font-weight: 800;">Current Active Rentals</h3>
+      <a href="/rentals.html" style="font-size: 0.85rem; font-weight: 600;">Manage All Rentals →</a>
+    </div>
+
+    <div class="rentals-active-grid" id="active-rentals-grid">
+      <div class="spinner" style="grid-column: 1/-1;"></div>
+    </div>
+
+    <!-- My Listings Section -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h3 style="font-size: 1.35rem; font-weight: 800;">My Campus Listings</h3>
+      <a href="/create-listing.html" style="font-size: 0.85rem; font-weight: 600;">+ Add Another Listing</a>
+    </div>
+
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Category</th>
+            <th>Condition</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="my-listings-tbody">
+          <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading your listings...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!API.isAuthenticated()) {
+        window.location.href = "/login.html";
+        return;
+      }
+      await loadDashboardData();
+    });
+
+    async function loadDashboardData() {
+      try {
+        const me = await API.request("/api/auth/me");
+        document.getElementById("avatar-circle").textContent = me.name.charAt(0).toUpperCase();
+        document.getElementById("user-name").textContent = me.name;
+        document.getElementById("user-dept-year").textContent = `${me.department} • ${me.year} • ${me.email}`;
+        document.getElementById("user-trust-tag").innerHTML = getTrustBadgeHtml(me.trust_score);
+
+        document.getElementById("kpi-trust").innerHTML = `${me.trust_score}<span style="font-size: 1rem; color: var(--text-muted);">/100</span>`;
+
+        // Fetch User's Rentals
+        const rentals = await API.request("/api/rentals?tab=all");
+        const activeRentals = rentals.filter(r => ["ACTIVE", "OVERDUE", "RETURN_REQUESTED"].includes(r.status));
+        const borrowedCount = rentals.filter(r => r.borrower_id === me.id).length;
+        const lentCount = rentals.filter(r => r.owner_id === me.id).length;
+
+        document.getElementById("kpi-active-rentals").textContent = activeRentals.length;
+        document.getElementById("kpi-borrowed").textContent = borrowedCount;
+        document.getElementById("kpi-lent").textContent = lentCount;
+
+        // Render Active Rentals Cards with Countdowns
+        renderActiveRentals(activeRentals, me.id);
+
+        // Fetch User's Listings
+        const allListings = await API.request("/api/listings");
+        const myListings = allListings.filter(l => l.owner_id === me.id);
+        document.getElementById("kpi-my-listings").textContent = myListings.length;
+
+        renderMyListings(myListings);
+
+      } catch (err) {
+        showToast("Failed to load dashboard data.", "error");
+      }
+    }
+
+    function renderActiveRentals(activeRentals, myId) {
+      const grid = document.getElementById("active-rentals-grid");
+
+      if (activeRentals.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1/-1; padding: 2.5rem 1rem;">
+            <div class="empty-icon">📦</div>
+            <h4>No Active Rentals Right Now</h4>
+            <p>You do not have any items checked out or lent at the moment.</p>
+            <a href="/marketplace.html" class="btn btn-primary btn-sm">Browse Campus Resources</a>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = activeRentals.map(r => {
+        const isBorrower = r.borrower_id === myId;
+        const otherParty = isBorrower ? r.owner : r.borrower;
+        const otherRole = isBorrower ? "Owner" : "Borrower";
+
+        let countdownCls = "countdown-ok";
+        let countdownIcon = "⏱️";
+        if (r.status === "OVERDUE" || (r.days_remaining !== null && r.days_remaining < 0)) {
+          countdownCls = "countdown-danger";
+          countdownIcon = "⚠️";
+        } else if (r.days_remaining === 1 || r.days_remaining === 0) {
+          countdownCls = "countdown-warn";
+          countdownIcon = "⏳";
+        }
+
+        return `
+          <div class="rental-item-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <span class="badge ${isBorrower ? 'badge-primary' : 'badge-secondary'}" style="margin-bottom: 0.35rem;">
+                  ${isBorrower ? 'Borrowed by You' : 'Lent to Peer'}
+                </span>
+                <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.2rem;">
+                  <a href="/listing.html?id=${r.listing_id}" style="color: inherit;">${r.listing ? r.listing.title : 'Item #' + r.listing_id}</a>
+                </h4>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">
+                  ${otherRole}: <strong>${otherParty ? otherParty.name : 'Student'}</strong> (${otherParty ? otherParty.department : ''})
+                </div>
+              </div>
+              <div>${getStatusBadgeHtml(r.status)}</div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.825rem; color: var(--text-muted); background: var(--bg-main); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm);">
+              <div>Due: <strong>${formatDate(r.end_date)}</strong></div>
+              <div class="countdown-pill ${countdownCls}">
+                <span>${countdownIcon}</span>
+                <span>${r.countdown_text || 'Active'}</span>
+              </div>
+            </div>
+
+            ${r.late_fee > 0 ? `
+              <div style="font-size: 0.8rem; color: var(--danger); font-weight: 700;">
+                Late Fee Accrued: ${formatCurrency(r.late_fee)}
+              </div>
+            ` : ''}
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: auto; padding-top: 0.5rem;">
+              <a href="/rentals.html" class="btn btn-secondary btn-sm">Rental Details →</a>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderMyListings(myListings) {
+      const tbody = document.getElementById("my-listings-tbody");
+
+      if (myListings.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+              You haven't listed any resources yet.
+              <br><br>
+              <a href="/create-listing.html" class="btn btn-primary btn-sm">+ List Your First Item</a>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = myListings.map(l => `
+        <tr>
+          <td>
+            <div style="font-weight: 700;">
+              <a href="/listing.html?id=${l.id}" style="color: inherit;">${l.title}</a>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">📍 ${l.pickup_location}</div>
+          </td>
+          <td><span class="badge badge-secondary">${l.category}</span></td>
+          <td>${l.condition}</td>
+          <td><strong>${l.rental_type === 'free' ? 'Free Borrow' : formatCurrency(l.price_per_day) + '/day'}</strong></td>
+          <td>${getStatusBadgeHtml(l.status)}</td>
+          <td style="text-align: right; white-space: nowrap;">
+            <a href="/listing.html?id=${l.id}" class="btn btn-secondary btn-sm" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">View</a>
+            <a href="/create-listing.html?edit=${l.id}" class="btn btn-secondary btn-sm" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Edit</a>
+            <button class="btn btn-danger btn-sm" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="deleteListing(${l.id})">Delete</button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    async function deleteListing(id) {
+      if (!confirm("Are you sure you want to remove this listing?")) return;
+      try {
+        await API.request(`/api/listings/${id}`, { method: "DELETE" });
+        showToast("Listing removed.", "success");
+        await loadDashboardData();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+  </script>
+</body>
+</html>
