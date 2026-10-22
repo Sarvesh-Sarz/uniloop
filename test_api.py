@@ -1,5 +1,5 @@
 """
-Automated Test Suite for CampusShare API
+Automated Test Suite for Uniloop API
 
 Tests:
 1. Health check
@@ -28,7 +28,7 @@ client = TestClient(app)
 
 
 def run_tests():
-    print("--- Running CampusShare Automated Test Suite ---")
+    print("--- Running Uniloops Automated Test Suite ---")
 
     # 1. Health check
     res = client.get("/api/health")
