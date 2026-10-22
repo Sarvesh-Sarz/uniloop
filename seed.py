@@ -1,5 +1,5 @@
 """
-CampusShare Database Seeder
+Uniloop Database Seeder
 
 Populates the database with:
 - 1 Admin account (admin@university.edu)
@@ -68,7 +68,7 @@ def seed():
     Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
-    print("Populating CampusShare database with realistic demo data...")
+    print("Populating Uniloop database with realistic demo data...")
 
     # 1. Create Admin Account
     admin_pw = hash_password("AdminPassword123!")
