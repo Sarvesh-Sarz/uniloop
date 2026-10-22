@@ -1,22 +1,22 @@
 /* ============================================================================== 
-   CampusShare Classic Style Sheet 
+   CampusShare Grayscale Sheet 
    Theme: Minimalist / Traditional Web Directory
-   Palette: High-contrast Monochrome with Standard Web Blue Links
+   Palette: Strict Monochrome (Black, White, and Grays)
    ============================================================================== */
 
 :root {
-  --primary: #0000ee;
-  --primary-hover: #551a8b;
-  --primary-light: #f0f0f0;
-  --primary-rgb: 0, 0, 238;
-  --secondary: #005588;
-  --secondary-light: #f4f4f4;
-  --success: #006600;
-  --success-light: #e6fee6;
-  --warning: #886600;
-  --warning-light: #fffcee;
-  --danger: #cc0000;
-  --danger-light: #ffe6e6;
+  --primary: #111111;
+  --primary-hover: #000000;
+  --primary-light: #e5e5e5;
+  --primary-rgb: 17, 17, 17;
+  --secondary: #333333;
+  --secondary-light: #f5f5f5;
+  --success: #222222;
+  --success-light: #eaeaea;
+  --warning: #444444;
+  --warning-light: #f0f0f0;
+  --danger: #000000;
+  --danger-light: #dddddd;
   
   --bg-main: #ffffff;
   --bg-card: #ffffff;
@@ -62,13 +62,14 @@ body {
 }
 
 a {
-  color: var(--primary);
+  color: var(--text-main);
   text-decoration: underline;
 }
 
 a:hover {
   color: var(--primary-hover);
   text-decoration: underline;
+  background-color: #f0f0f0;
 }
 
 img {
@@ -76,6 +77,8 @@ img {
   height: auto;
   display: block;
   border: 1px solid var(--border);
+  /* Optional force-grayscale filter for uploaded images */
+  filter: grayscale(100%);
 }
 
 /* ============================================================================== 
@@ -139,7 +142,7 @@ img {
 }
 
 .nav-link {
-  color: var(--primary);
+  color: var(--text-main);
   font-weight: bold;
   font-size: 0.95rem;
   padding: 0.25rem 0.5rem;
@@ -177,12 +180,13 @@ img {
 }
 
 .notif-badge {
-  background: var(--danger);
+  background: var(--text-main);
   color: #fff;
   font-size: 0.75rem;
   font-weight: bold;
   padding: 1px 4px;
   margin-left: 0.25rem;
+  border: 1px solid var(--border);
 }
 
 .notif-dropdown {
@@ -223,7 +227,8 @@ img {
 }
 
 .notif-item.unread {
-  background: var(--warning-light);
+  background: var(--secondary-light);
+  border-left: 4px solid var(--text-main);
   font-weight: bold;
 }
 
@@ -269,24 +274,25 @@ img {
   font-size: 0.9rem;
   font-weight: bold;
   border: 2px solid #000000;
-  background: #e9e9e9;
+  background: #ffffff;
   color: #000000;
   cursor: pointer;
   text-decoration: none;
 }
 
 .btn:hover {
-  background: #cccccc;
+  background: #000000;
+  color: #ffffff;
 }
 
 .btn-primary {
-  background-color: var(--primary);
+  background-color: #000000;
   color: #ffffff;
-  border-color: #000055;
+  border-color: #000000;
 }
 
 .btn-primary:hover {
-  background-color: #0000bb;
+  background-color: #333333;
 }
 
 .btn-secondary {
@@ -294,20 +300,27 @@ img {
   border-color: var(--border);
 }
 
+.btn-secondary:hover {
+  background: #eeeeee;
+  color: #000000;
+}
+
 .btn-success {
-  background-color: var(--success);
+  background-color: #555555;
   color: #ffffff;
+  border-color: #333333;
 }
 
 .btn-danger {
-  background-color: var(--danger);
+  background-color: #111111;
   color: #ffffff;
+  border-color: #000000;
 }
 
 .btn-outline-primary {
   background-color: transparent;
-  color: var(--primary);
-  border-color: var(--primary);
+  color: var(--text-main);
+  border-color: var(--text-main);
 }
 
 .btn-sm {
@@ -334,12 +347,13 @@ img {
   font-weight: bold;
   border: 1px solid var(--border);
   background: var(--secondary-light);
+  color: var(--text-main);
 }
 
-.badge-primary { background: #e0e0ff; color: #0000aa; }
-.badge-success { background: #e0f0e0; color: #006600; }
-.badge-warning { background: #fff0d0; color: #664400; }
-.badge-danger { background: #ffe0e0; color: #aa0000; }
+.badge-primary { background: #ffffff; color: #000000; border: 1px dashed #000000; }
+.badge-success { background: #e5e5e5; color: #111111; }
+.badge-warning { background: #cccccc; color: #111111; }
+.badge-danger { background: #000000; color: #ffffff; }
 
 .trust-badge {
   display: inline-flex;
@@ -353,7 +367,7 @@ img {
 .trust-dot {
   width: 6px;
   height: 6px;
-  background: var(--success);
+  background: var(--text-main);
 }
 
 /* ============================================================================== 
@@ -492,23 +506,5 @@ img {
   font-weight: bold;
   border-bottom: 1px solid #ffffff;
   margin-bottom: -1px;
-}
-
-/* ============================================================================== 
-   TOAST NOTIFICATIONS 
-   ============================================================================== */
-#toast-container {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  z-index: 1000;
-  width: 300px;
-}
-
-.toast {
-  background: #ffffff;
-  border: 2px solid var(--text-main);
-  padding: 0.5rem;
-  margin-top: 0.5rem;
 }
 
