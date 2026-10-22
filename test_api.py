@@ -28,7 +28,7 @@ client = TestClient(app)
 
 
 def run_tests():
-    print("--- Running Uniloops Automated Test Suite ---")
+    print("--- Running Uniloop Automated Test Suite ---")
 
     # 1. Health check
     res = client.get("/api/health")

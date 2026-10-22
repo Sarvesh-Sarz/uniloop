@@ -1,6 +1,6 @@
-# CampusShare - Run Script
+# Uniloop - Run Script
 
-Write-Host "Starting CampusShare..." -ForegroundColor Cyan
+Write-Host "Starting Uniloop..." -ForegroundColor Cyan
 
 # Create venv if missing
 if (-not (Test-Path "venv")) {
