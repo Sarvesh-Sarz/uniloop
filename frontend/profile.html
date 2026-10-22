@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Profile — CampusShare</title>
+  <title>Student Profile — Uniloop</title>
   <link rel="stylesheet" href="/css/styles.css">
   <style>
     .profile-layout {
@@ -131,7 +131,7 @@
         const allListings = await API.request("/api/listings");
         const userListings = allListings.filter(l => l.owner_id === parseInt(userId));
 
-        document.title = `${user.name} — CampusShare Profile`;
+        document.title = `${user.name} — Uniloop Profile`;
 
         container.innerHTML = `
           <!-- Left Column: User Card & Trust Breakdown -->
@@ -167,7 +167,7 @@
                 🛡️ Trust Score Engine
               </h4>
               <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
-                CampusShare computes this score using a transparent, rule-based algorithmic model:
+                Uniloop computes this score using a transparent, rule-based algorithmic model:
               </p>
 
               <div class="trust-factor-row">
