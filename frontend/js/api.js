@@ -1,21 +1,21 @@
 /**
- * CampusShare Central API Client & Utilities
+ * Uniloop Central API Client & Utilities
  * Uses Vanilla Fetch API with JWT handling and Toast Notifications.
  */
 
 const API = {
   // Token & User session management
   getToken() {
-    return localStorage.getItem("campusshare_token");
+    return localStorage.getItem("Uniloop_token");
   },
 
   setSession(token, user) {
-    localStorage.setItem("campusshare_token", token);
-    localStorage.setItem("campusshare_user", JSON.stringify(user));
+    localStorage.setItem("Uniloop_token", token);
+    localStorage.setItem("Uniloop_user", JSON.stringify(user));
   },
 
   getUser() {
-    const raw = localStorage.getItem("campusshare_user");
+    const raw = localStorage.getItem("Uniloop_user");
     try {
       return raw ? JSON.parse(raw) : null;
     } catch {
@@ -24,8 +24,8 @@ const API = {
   },
 
   clearSession() {
-    localStorage.removeItem("campusshare_token");
-    localStorage.removeItem("campusshare_user");
+    localStorage.removeItem("Uniloop_token");
+    localStorage.removeItem("Uniloop_user");
   },
 
   isAuthenticated() {
