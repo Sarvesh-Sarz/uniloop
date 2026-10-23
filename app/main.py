@@ -1,5 +1,5 @@
 """
-CampusShare — Main Application Entry Point
+Uniloop — Main Application Entry Point
 
 Full-Stack Campus Resource Sharing & Peer-to-Peer Rental Hub
 Built with FastAPI, SQLAlchemy ORM, and modern Vanilla HTML/CSS/JS.
@@ -34,7 +34,7 @@ os.makedirs("frontend", exist_ok=True)
 
 # 3. Create FastAPI Application
 app = FastAPI(
-    title="CampusShare API",
+    title="Uniloop API",
     description="Hyperlocal campus resource sharing and peer-to-peer rental hub for university students.",
     version="1.0.0",
     docs_url="/docs",
@@ -68,7 +68,7 @@ app.include_router(admin_router)
 def health_check():
     return {
         "status": "healthy",
-        "service": "CampusShare API",
+        "service": "Uniloop API",
         "version": "1.0.0"
     }
 

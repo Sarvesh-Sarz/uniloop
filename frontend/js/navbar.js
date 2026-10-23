@@ -1,5 +1,5 @@
 /**
- * CampusShare Universal Navigation & Notification Handler
+ * Uniloop Universal Navigation & Notification Handler
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -24,7 +24,7 @@ function renderNavbar() {
         <!-- Logo -->
         <a href="/index.html" class="brand-logo">
           <div class="brand-badge">⚡</div>
-          <div>Campus<span class="accent">Share</span></div>
+          <div>Uniloop<span class="accent"></span></div>
         </a>
 
         <!-- Desktop Navigation Links -->

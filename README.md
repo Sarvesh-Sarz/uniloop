@@ -1,4 +1,4 @@
-# CampusShare — Campus Resource Sharing & Peer-to-Peer Rental Hub
+# Uniloop — Campus Resource Sharing & Peer-to-Peer Rental Hub
 
 > **Tagline:** *Share More. Spend Less.*  
 > A hyperlocal marketplace and peer-to-peer rental web platform for university students to safely rent, borrow, and lend textbooks, lab equipment, electronics, calculators, and tools.
@@ -9,7 +9,7 @@
 
 Students often buy expensive items (such as scientific calculators, specialized lab coats, engineering drawing kits, or ₹2,000+ textbooks) for a single semester and then never use them again. Meanwhile, incoming students need the exact same items. 
 
-**CampusShare** solves this problem by providing a verified, campus-focused resource hub where students from the same university can list unused resources for daily/weekly paid rental or free borrowing, backed by:
+**Uniloop** solves this problem by providing a verified, campus-focused resource hub where students from the same university can list unused resources for daily/weekly paid rental or free borrowing, backed by:
 - **University Email Verification** (e.g. `@university.edu`)
 - **Authoritative Backend Pricing & Quote Calculator**
 - **Refundable Security Deposits**
@@ -113,7 +113,7 @@ PostgreSQL / SQLite Database (`users`, `listings`, `rentals`, `ratings`, `report
 ## 5. Project Directory Structure
 
 ```text
-campusshare/
+Uniloop/
 │
 ├── app/
 │   ├── main.py                  # FastAPI app entry point, route mounts & static files
@@ -222,7 +222,7 @@ pip install -r requirements.txt
 
 ## 7. Database Configuration
 
-CampusShare supports both **PostgreSQL** (Production / Standard) and **SQLite** (Local Zero-Config).
+Uniloop supports both **PostgreSQL** (Production / Standard) and **SQLite** (Local Zero-Config).
 
 ### Option A: Instant Local SQLite (Default)
 No setup required! The `.env` file already contains:

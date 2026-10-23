@@ -1,5 +1,5 @@
 @echo off
-echo Starting CampusShare...
+echo Starting Uniloop...
 echo.
 
 REM Create virtual environment if it doesn't exist

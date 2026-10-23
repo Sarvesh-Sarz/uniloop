@@ -16,7 +16,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 load_dotenv()
 
 # Database connection URL from environment, defaulting to local SQLite for instant setup
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./campusshare.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./uniloop.db")
 
 # SQLite requires 'check_same_thread: False' to allow multiple threads to interact with the database
 connect_args = {}

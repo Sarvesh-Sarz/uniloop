@@ -22,7 +22,7 @@ from app.database import get_db
 load_dotenv()
 
 # JWT Configuration
-SECRET_KEY = os.getenv("SECRET_KEY", "campusshare_super_secret_jwt_key_for_development_replace_in_prod_2025")
+SECRET_KEY = os.getenv("SECRET_KEY", "uniloop_super_secret_jwt_key_for_development_replace_in_prod_2025")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))
 
