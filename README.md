@@ -227,19 +227,19 @@ Uniloop supports both **PostgreSQL** (Production / Standard) and **SQLite** (Loc
 ### Option A: Instant Local SQLite (Default)
 No setup required! The `.env` file already contains:
 ```env
-DATABASE_URL=sqlite:///./campusshare.db
+DATABASE_URL=sqlite:///./Uniloop.db
 ```
-When you run the seed script or start the server, `campusshare.db` is created automatically with all 10 tables.
+When you run the seed script or start the server, `Uniloop.db` is created automatically with all 10 tables.
 
 ### Option B: Setting up PostgreSQL
 If you want to run PostgreSQL:
 1. Open PostgreSQL CLI or pgAdmin:
    ```sql
-   CREATE DATABASE campusshare_db;
+   CREATE DATABASE Uniloop_db;
    ```
 2. Update your `.env` file:
    ```env
-   DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/campusshare_db
+   DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/Uniloop_db
    ```
 3. Run `python seed.py` to initialize tables and load demo records.
 

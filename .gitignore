@@ -7,7 +7,7 @@ __pycache__/
 .Python
 
 # Database (don't upload - will be created fresh)
-campusshare.db
+Uniloop.db
 
 # Uploaded images
 uploads/
